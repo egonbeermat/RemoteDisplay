@@ -1,6 +1,6 @@
 {
     "name": "RemoteDisplay",
-    "description": "A library to send Teensy 4.1 screen frame buffers over Ethernet to display on another device",
+    "description": "A library to send Teensy 4.1 screen buffers over Ethernet to display on another device",
     "keywords": "display, remote",
     "authors": [
       {

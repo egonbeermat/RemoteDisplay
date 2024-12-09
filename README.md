@@ -1,5 +1,5 @@
 
-# _RemoteDisplay_, A library to send Teensy 4.1 screen buffers over Ethernet to display on another device
+# _RemoteDisplay_, a library to send Teensy 4.1 screen buffers over Ethernet to display on another device
 
 _Version: 0.1.0_
 
@@ -9,17 +9,17 @@ This library is distributed under the "AGPL-3.0-or-later" license. Please contac
 
 ## Introduction
 
-Demo of this in action, streaming from a Teensy 4.1 over Ethernet, running an LVGL driven display:
+Demo of this in action, streaming from a Teensy 4.1 running an LVGL driven display, over Ethernet to a client running on a Mac Mini:
 
 https://youtu.be/TxMsTKo4VVM
 
-If your Teensy 4.1 uses a screen buffer and transmits screen updates to a physical display using a standard pattern of defining an area x, y, w, h, and a pointer to uint16_t colors for the pixels, you can use this library to compress and send that buffer to display on your desktop or mobile device, using the included client software. Additionally, you can link touch controls on the desktop or mobile device into your code on the Teensy 4.1, allowing full remote operation of your device.
+If your Teensy 4.1 uses a screen buffer and transmits screen updates to a physical display using a standard pattern of defining an area x, y, w, h, and a pointer to  a 16 bit RGB565 color buffer for the pixels, you can use this library to compress and send that buffer to display on your desktop or mobile device, using the included client software. Additionally, you can link touch controls on the desktop or mobile device into your code on the Teensy 4.1, allowing full remote operation of your device.
 
 Use this for operating your device easily whilst developing, or to test display code without having a physical screen to display on, or to test different resolutions on the remote display, without having a physical screen that supports that resolution.
 
 Remote client software allows you to zoom and pan on the local view of your screen, and super-impose pixel grids and display crosshairs to pinpoint screen co-ordinates, taking some of the guess work out of screen design efforts.
 
-Tested with [QNEthernet](https://github.com/ssilverman/QNEthernet/) _(recommended)_ and [NativeEthernet](https://github.com/vjmuzik/NativeEthernet/) libraries.
+Tested with [QNEthernet](https://github.com/ssilverman/QNEthernet/) _(recommended)_ and [NativeEthernet](https://github.com/vjmuzik/NativeEthernet/) libraries. _(Note: there is a #define in remoteDisplay.h that needs to be changed to use NativeEthernet)_
 
 ## Setup
 
