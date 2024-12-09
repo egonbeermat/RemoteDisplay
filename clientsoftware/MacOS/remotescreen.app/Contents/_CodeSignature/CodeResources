@@ -23,55 +23,55 @@
 		<dict>
 			<key>cdhash</key>
 			<data>
-			iONMkMUAgBlGBw+D4w9eXV+LSuI=
+			SAQv9GsQXoKPZZZaBDsn7TZSU0Q=
 			</data>
 			<key>requirement</key>
-			<string>identifier "io.flutter.flutter.app" and anchor apple generic and certificate leaf[subject.CN] = "Apple Development: Ian Wall (HJW284AP83)" and certificate 1[field.1.2.840.113635.100.6.2.1] /* exists */</string>
+			<string>anchor apple generic and identifier "io.flutter.flutter.app" and (certificate leaf[field.1.2.840.113635.100.6.1.9] /* exists */ or certificate 1[field.1.2.840.113635.100.6.2.6] /* exists */ and certificate leaf[field.1.2.840.113635.100.6.1.13] /* exists */ and certificate leaf[subject.OU] = K42JS4D4A8)</string>
 		</dict>
 		<key>Frameworks/FlutterMacOS.framework</key>
 		<dict>
 			<key>cdhash</key>
 			<data>
-			DLwCR/nxSfaDRmm8xVBVD/zV754=
+			+nUo2o+HWOyUfcG52biFcdk5hEI=
 			</data>
 			<key>requirement</key>
-			<string>identifier "io.flutter.flutter-macos" and anchor apple generic and certificate leaf[subject.CN] = "Apple Development: Ian Wall (HJW284AP83)" and certificate 1[field.1.2.840.113635.100.6.2.1] /* exists */</string>
+			<string>anchor apple generic and identifier "io.flutter.flutter-macos" and (certificate leaf[field.1.2.840.113635.100.6.1.9] /* exists */ or certificate 1[field.1.2.840.113635.100.6.2.6] /* exists */ and certificate leaf[field.1.2.840.113635.100.6.1.13] /* exists */ and certificate leaf[subject.OU] = K42JS4D4A8)</string>
 		</dict>
 		<key>Frameworks/network_info_plus.framework</key>
 		<dict>
 			<key>cdhash</key>
 			<data>
-			LdMlYVQujfqIqusowGGhi0Rws+w=
+			yT+mvpIii6ZqY/Bomtk8L2mGT10=
 			</data>
 			<key>requirement</key>
-			<string>identifier "org.cocoapods.network-info-plus" and anchor apple generic and certificate leaf[subject.CN] = "Apple Development: Ian Wall (HJW284AP83)" and certificate 1[field.1.2.840.113635.100.6.2.1] /* exists */</string>
+			<string>anchor apple generic and identifier "org.cocoapods.network-info-plus" and (certificate leaf[field.1.2.840.113635.100.6.1.9] /* exists */ or certificate 1[field.1.2.840.113635.100.6.2.6] /* exists */ and certificate leaf[field.1.2.840.113635.100.6.1.13] /* exists */ and certificate leaf[subject.OU] = K42JS4D4A8)</string>
 		</dict>
 		<key>Frameworks/package_info_plus.framework</key>
 		<dict>
 			<key>cdhash</key>
 			<data>
-			Z0oE2JVGiToIhzTicMSOETwWCpA=
+			LEJCV/vqFQz7ibJih5VIMsWE/xs=
 			</data>
 			<key>requirement</key>
-			<string>identifier "org.cocoapods.package-info-plus" and anchor apple generic and certificate leaf[subject.CN] = "Apple Development: Ian Wall (HJW284AP83)" and certificate 1[field.1.2.840.113635.100.6.2.1] /* exists */</string>
+			<string>anchor apple generic and identifier "org.cocoapods.package-info-plus" and (certificate leaf[field.1.2.840.113635.100.6.1.9] /* exists */ or certificate 1[field.1.2.840.113635.100.6.2.6] /* exists */ and certificate leaf[field.1.2.840.113635.100.6.1.13] /* exists */ and certificate leaf[subject.OU] = K42JS4D4A8)</string>
 		</dict>
 		<key>Frameworks/path_provider_foundation.framework</key>
 		<dict>
 			<key>cdhash</key>
 			<data>
-			4Qi8XL4AamjrbJOhiSKGBjka8fE=
+			et0DxqnQNaf7PksQ8hZA8JA8TCU=
 			</data>
 			<key>requirement</key>
-			<string>identifier "org.cocoapods.path-provider-foundation" and anchor apple generic and certificate leaf[subject.CN] = "Apple Development: Ian Wall (HJW284AP83)" and certificate 1[field.1.2.840.113635.100.6.2.1] /* exists */</string>
+			<string>anchor apple generic and identifier "org.cocoapods.path-provider-foundation" and (certificate leaf[field.1.2.840.113635.100.6.1.9] /* exists */ or certificate 1[field.1.2.840.113635.100.6.2.6] /* exists */ and certificate leaf[field.1.2.840.113635.100.6.1.13] /* exists */ and certificate leaf[subject.OU] = K42JS4D4A8)</string>
 		</dict>
 		<key>Frameworks/shared_preferences_foundation.framework</key>
 		<dict>
 			<key>cdhash</key>
 			<data>
-			+CKsDCbzbKOYBcFnHddR3Z+oVAU=
+			45Z+zngVhBHm8veBrlBcrjiOxBE=
 			</data>
 			<key>requirement</key>
-			<string>identifier "org.cocoapods.shared-preferences-foundation" and anchor apple generic and certificate leaf[subject.CN] = "Apple Development: Ian Wall (HJW284AP83)" and certificate 1[field.1.2.840.113635.100.6.2.1] /* exists */</string>
+			<string>anchor apple generic and identifier "org.cocoapods.shared-preferences-foundation" and (certificate leaf[field.1.2.840.113635.100.6.1.9] /* exists */ or certificate 1[field.1.2.840.113635.100.6.2.6] /* exists */ and certificate leaf[field.1.2.840.113635.100.6.1.13] /* exists */ and certificate leaf[subject.OU] = K42JS4D4A8)</string>
 		</dict>
 		<key>Resources/AppIcon.icns</key>
 		<dict>
