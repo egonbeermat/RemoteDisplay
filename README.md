@@ -1,5 +1,5 @@
 
-# _RemoteDisplay_, A library to send Teensy 4.1 screen frame buffers over Ethernet to display on another device
+# _RemoteDisplay_, A library to send Teensy 4.1 screen buffers over Ethernet to display on another device
 
 _Version: 0.1.0_
 
@@ -23,23 +23,22 @@ Tested with [QNEthernet](https://github.com/ssilverman/QNEthernet/) _(recommende
 
 ## Setup
 
-This assumes you already have Ethernet connectivity and code setup. Refer to the examples and Ethernet library documentation if you haven't already done so.
+This assumes you already have Ethernet connectivity and code setup. Refer to the examples and Ethernet library documentation if you haven't already done so. Follow these **5** steps to implement:
 
-In your Teensy code, include the library and declare an instance of RemoteDisplay:
+**Step 1:** include the library and declare an instance of RemoteDisplay:
 
   ```c++
   #include <RemoteDisplay.h>
-
 RemoteDisplay remoteDisplay;
   ```
 
-After an Ethernet connection is established, initialize the library, providing the width and height of the desired display, and a valid port number to listen for UDP connections:
+**Step 2:** After an Ethernet connection is established, initialize the library, providing the width and height of the desired display, and a valid port number to listen for UDP connections:
 
   ```c++
 remoteDisplay.init(SCREENWIDTH, SCREENHEIGHT, portNumber);
   ```
 
-Additionally, you can register callbacks to be executed when the client software requests a full display refresh, and detects a touch:
+**Step 3:** You can register callbacks to be executed when the client software requests a full display refresh, and detects a touch:
 
   ```c++
 void  refreshDisplayCallback() {
@@ -50,24 +49,29 @@ void  remoteTouchCallback(uint16_t x, uint16_t y, uint8_t action) {
 	// Executed when remoteDisplay.readRemoteCommand() detects a touch event.
 	// x & y represent the co-ords of the touch, action is either 0 (PRESSED) or 1 (RELEASED)
 }
-
 ...
-
 remoteDisplay.registerRefreshCallback(refreshDisplayCallback);
 remoteDisplay.registerTouchCallback(remoteTouchCallback);
-  ```
+```
 
-In the main loop of your code, you will need to poll to see if the connection to the remote client received a touch event or a request to connect, disconnect or send a full display refresh:
+**Step 4:** In the main loop of your code, you will need to poll to see if the connection to the remote client received a touch event or a request to connect, disconnect or send a full display refresh:
 
   ```c++
 void loop() {
-
 ...
 	remoteDisplay.pollRemoteCommand();
 ...
 }
-  ```
-  If you registered a touch callback, it will be called if the `pollRemoteCommand()` detected a touch event. Alternatively, you can reference the following in your own (polled) touch interface code, and arbitrate between local and remote touches:
+```
+**Step 5:** To transit buffer updates to the remote client, if the remote client is connected, call `sendData` with parameters x1, y1, x2, y2 (the bounds of the update rectangle) and a pointer to a buffer containing 16 bit RGB565 color values:
+
+```c++
+if (remoteDisplay.sendRemoteScreen == true) {
+    remoteDisplay.sendData(x1, y1, x2, y2, (uint8_t *)buffer);
+}
+```
+
+If you registered a touch callback, it will be called if the `pollRemoteCommand()` detected a touch event. Alternatively, you can reference the following in your own (polled) touch interface code, and arbitrate between local and remote touches:
 
 `remoteDisplay.lastRemoteTouchState` - set to `RemoteDisplay::PRESSED` or `RemoteDisplay::RELEASED`
 `remoteDisplay.lastRemoteTouchX` - X co-ordinate of last touch sent from remote client
