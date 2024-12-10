@@ -25,7 +25,7 @@ Tested with [QNEthernet](https://github.com/ssilverman/QNEthernet/) _(recommende
 
 This assumes you already have Ethernet connectivity and code setup. Refer to the examples and Ethernet library documentation if you haven't already done so. Follow these **5** steps to implement:
 
-**Step 1:** include the library and declare an instance of RemoteDisplay:
+**Step 1:** Include the library and declare an instance of RemoteDisplay:
 
   ```c++
   #include <RemoteDisplay.h>
@@ -38,7 +38,7 @@ RemoteDisplay remoteDisplay;
 remoteDisplay.init(SCREENWIDTH, SCREENHEIGHT, portNumber);
   ```
 
-**Step 3:** You can register callbacks to be executed when the client software requests a full display refresh, and detects a touch:
+**Step 3:** Register callbacks to be executed when the client software requests a full display refresh (essential but optional), and detects a touch (optional):
 
   ```c++
 void  refreshDisplayCallback() {
@@ -54,7 +54,7 @@ remoteDisplay.registerRefreshCallback(refreshDisplayCallback);
 remoteDisplay.registerTouchCallback(remoteTouchCallback);
 ```
 
-**Step 4:** In the main loop of your code, you will need to poll to see if the connection to the remote client received a touch event or a request to connect, disconnect or send a full display refresh:
+**Step 4:** In the main loop of your code, you will need to make a call to allow RemoteDisplay to check if it received a command from the client software (touch event, connect, disconnect, send a full display refresh):
 
   ```c++
 void loop() {
@@ -63,7 +63,7 @@ void loop() {
 ...
 }
 ```
-**Step 5:** To transit buffer updates to the remote client, if the remote client is connected, call `sendData` with parameters x1, y1, x2, y2 (the bounds of the update rectangle) and a pointer to a buffer containing 16 bit RGB565 color values:
+**Step 5:** To transmit buffer updates to the remote client, if the remote client is connected, call `sendData` with parameters x1, y1, x2, y2 (the bounds of the update rectangle) and a pointer to a buffer **only** containing 16 bit RGB565 color values for the area to be updated:
 
 ```c++
 if (remoteDisplay.sendRemoteScreen == true) {
@@ -71,11 +71,21 @@ if (remoteDisplay.sendRemoteScreen == true) {
 }
 ```
 
+## Additional Info
+
 If you registered a touch callback, it will be called if the `pollRemoteCommand()` detected a touch event. Alternatively, you can reference the following in your own (polled) touch interface code, and arbitrate between local and remote touches:
 
 `remoteDisplay.lastRemoteTouchState` - set to `RemoteDisplay::PRESSED` or `RemoteDisplay::RELEASED`
 `remoteDisplay.lastRemoteTouchX` - X co-ordinate of last touch sent from remote client
 `remoteDisplay.lastRemoteTouchY` - Y co-ordinate of last touch sent from remote client
+
+The client software has an interface that provides a mechanism to control if buffer updates are sent to the physical screen, or not, potentially improving performance for the network send by disabling the local screen buffer flush. This sets `remoteDisplay.disableLocalScreen` to true or false, and you can check this before sending your buffer updates to the physical screen.
+
+The client software typically initiates the connection to the Teensy, but you can call `remoteDisplay.connectRemote(IPAddress)` from the Teensy, supplying it's IP address, to initiate the connection. This is useful if you wish to auto-reconnect after a reboot, for instance.
+
+## Performance
+
+RemoteDisplay uses escaped run-length encoding to compress the data before sending over the network. For performance reasons, it is beneficial to reduce the amount of data transfered over the network, but not at the expense of a complex compression algorithm consuming even more time. RemoteDisplay was tested without compression, with RLE encoding, and with both an 8 bit and 16 bit value for run-length in escaped RLE encoding. In all data scenarios (simple UI, complex UI, images, 24fps full screen video), 8 bit escaped RLE encoding performed the best, achieving the best compression / least overhead for compression, and a significant performance improvement compared to just streaming the raw data. For simple to medium complexity UIs, compression ratios of 70-85% is typical. For MJPEG videos encoded in ffmpeg with quality 5, it achieves around 30-40% compression ratios. The remote client provides statistics on data received, compression ratios and additional information about the encoding, so you can make decisions around changing this, if you wish.
 
 ## Limitations
 
