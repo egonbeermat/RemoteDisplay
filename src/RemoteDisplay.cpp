@@ -18,6 +18,13 @@ FLASHMEM void RemoteDisplay::init(uint16_t inScreenWidth, uint16_t inScreenHeigh
     }
 }
 
+FLASHMEM void  RemoteDisplay::registerRefreshCallback(refresh_callback_t inRefreshCallback)
+{
+    Serial.printf("In RemoteDisplay::registerRefreshCallback\n");
+
+    refreshCallback = inRefreshCallback;
+}
+
 FLASHMEM void  RemoteDisplay::registerTouchCallback(touch_callback_t inTouchCallback)
 {
     Serial.printf("In RemoteDisplay::registerTouchCallback\n");
@@ -25,11 +32,11 @@ FLASHMEM void  RemoteDisplay::registerTouchCallback(touch_callback_t inTouchCall
     touchCallback = inTouchCallback;
 }
 
-FLASHMEM void  RemoteDisplay::registerRefreshCallback(refresh_callback_t inRefreshCallback)
+FLASHMEM void  RemoteDisplay::registerCommandCallback(command_callback_t inCommandCallback)
 {
-    Serial.printf("In RemoteDisplay::registerRefreshCallback\n");
+    Serial.printf("In RemoteDisplay::registerCommandCallback\n");
 
-    refreshCallback = inRefreshCallback;
+    commandCallback = inCommandCallback;
 }
 
 FLASHMEM void RemoteDisplay::connectRemote(IPAddress ipRemote)
@@ -41,6 +48,10 @@ FLASHMEM void RemoteDisplay::connectRemote(IPAddress ipRemote)
 
     sendHeader(INIT_REMOTE, 0);
     refreshDisplay();
+
+    if (commandCallback) {
+        commandCallback(CMD_CONNECT);
+    }
 }
 
 FLASHMEM void RemoteDisplay::disconnectRemote()
@@ -48,6 +59,10 @@ FLASHMEM void RemoteDisplay::disconnectRemote()
     Serial.printf("In RemoteDisplay::disconnectRemote\n");
 
     sendRemoteScreen = false;
+
+    if (commandCallback) {
+        commandCallback(CMD_DISCONNECT);
+    }
 }
 
 FLASHMEM void RemoteDisplay::refreshDisplay()
@@ -200,6 +215,9 @@ FASTRUN void RemoteDisplay::pollRemoteCommand()
                 break;
             case 5: //Toggle disable local screen
                 disableLocalScreen = !disableLocalScreen;
+                if (commandCallback) {
+                    commandCallback(disableLocalScreen ? CMD_DISABLE_SCREEN : CMD_ENABLE_SCREEN);
+                }
                 break;
         }
     }

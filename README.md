@@ -1,7 +1,7 @@
 
 # _RemoteDisplay_, a library to send Teensy 4.1 screen buffers over Ethernet to display on another device
 
-_Version: 0.1.0_
+_Version: 0.1.1_
 
 The _RemoteDisplay_ library, in conjunction with the supplied [Windows](https://github.com/egonbeermat/RemoteDisplay/tree/main/clientsoftware/Windows) and [MacOS](https://github.com/egonbeermat/RemoteDisplay/tree/main/clientsoftware/MacOS) client software, provides the ability to remotely display and control your Teensy screen from your desktop.
 
@@ -39,7 +39,7 @@ RemoteDisplay remoteDisplay;
 remoteDisplay.init(SCREENWIDTH, SCREENHEIGHT, portNumber);
   ```
 
-**Step 4:** Register callbacks to be executed when the client software requests a full display refresh (essential but optional), and detects a touch (optional):
+**Step 4:** Register callbacks to be executed when the client software requests a full display refresh (essential but optional), detects a touch event (optional) or issues a command (optional):
 
   ```c++
 void  refreshDisplayCallback() {
@@ -50,9 +50,14 @@ void  remoteTouchCallback(uint16_t x, uint16_t y, uint8_t action) {
 	// Executed when remoteDisplay.readRemoteCommand() detects a touch event.
 	// x & y represent the co-ords of the touch, action is either 0 (PRESSED) or 1 (RELEASED)
 }
+void  commandCallback(uint8_t command) {
+  // Executed when client connects, disconnects or enables/disables attached physical screen
+  // command is CommandType  - CMD_CONNECT, CMD_DISCONNECT, CMD_DISABLE_SCREEN, CMD_ENABLE_SCREEN
+}
 ...
 remoteDisplay.registerRefreshCallback(refreshDisplayCallback);
 remoteDisplay.registerTouchCallback(remoteTouchCallback);
+remoteDisplay.registerCommandCallback(commandCallback);
 ```
 
 **Step 5:** In the main loop of your code, you will need to make a call to allow RemoteDisplay to check if it received a command from the client software (touch event, connect, disconnect, send a full display refresh):

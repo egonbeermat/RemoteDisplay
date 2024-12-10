@@ -23,13 +23,16 @@ class RemoteDisplay
 {
     using touch_callback_t = void (*)(uint16_t x, uint16_t y, uint8_t action);
     using refresh_callback_t = void (*)();
+    using command_callback_t = void (*)(uint8_t command);
 public:
 
     enum TouchState {PRESSED, RELEASED};
+    enum CommandType {CMD_CONNECT, CMD_DISCONNECT, CMD_DISABLE_SCREEN, CMD_ENABLE_SCREEN};
 
     void init(uint16_t inScreenWidth, uint16_t inScreenHeight, uint16_t inPortStream);
     void registerRefreshCallback(refresh_callback_t inRefreshCallback);
     void registerTouchCallback(touch_callback_t inTouchCallback);
+    void registerCommandCallback(command_callback_t inCommandCallback);
 
     void pollRemoteCommand();
     void sendData(const uint16_t x1, const uint16_t y1, const uint16_t x2, const uint16_t y2, uint8_t *pixelmap);
@@ -83,6 +86,7 @@ private:
 
     touch_callback_t touchCallback;
     refresh_callback_t refreshCallback;
+    command_callback_t commandCallback;
 
     void refreshDisplay();
     void sendHeader(uint16_t controlValue, uint32_t extraData);
