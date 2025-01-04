@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: (c) 2024 Ian Wall <egonbeermat@gmail.com>
+// SPDX-FileCopyrightText: (c) 2024-2025 Ian Wall <egonbeermat@gmail.com>
 // SPDX-License-Identifier: AGPL-3.0-or-later
 
 // SimpleHTTPClient implements a simple example to push random small blocks
@@ -115,13 +115,13 @@ void loop() {
     case States::kSendRequest:
       // Poll remoteDisplay to read commands from the client, such as connect/disconnect, and touch events
       remoteDisplay.pollRemoteCommand();
-      
+
       // If the client connection was initiated from the client, sendRemoteScreen will be true, and we can send updates
       if (remoteDisplay.sendRemoteScreen == true) {
         uint16_t x = random(SCREENWIDTH - 4);
         uint16_t y = random(SCREENHEIGHT - 4);
         remoteDisplay.sendData(x, y, x + 3, y + 3, (uint8_t *)blockcolorbuf);
-      } 
+      }
       delay(20);
       break;
   }

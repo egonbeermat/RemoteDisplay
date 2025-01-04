@@ -1,9 +1,9 @@
 
-# _RemoteDisplay_, a library to send Teensy 4.1 screen buffers over Ethernet to display on another device
+# _RemoteDisplay_, a library to send Teensy 4.1 screen buffers over Ethernet or SerialUSB to display on another device
 
-_Version: 0.1.1_
+_Version: 0.2.0_
 
-The _RemoteDisplay_ library, in conjunction with the supplied [Windows](https://github.com/egonbeermat/RemoteDisplay/tree/main/clientsoftware/Windows) and [MacOS](https://github.com/egonbeermat/RemoteDisplay/tree/main/clientsoftware/MacOS) client software, provides the ability to remotely display and control your Teensy screen from your desktop.
+The _RemoteDisplay_ library, in conjunction with the supplied [Windows](https://github.com/egonbeermat/RemoteDisplay/tree/main/clientsoftware/Windows) and [MacOS](https://github.com/egonbeermat/RemoteDisplay/tree/main/clientsoftware/MacOS) client software, provides the ability to remotely display and control your Teensy screen from your desktop over Ethernet or SerialUSB.
 
 ## Introduction
 
@@ -17,13 +17,16 @@ Use this for operating your device easily whilst developing, or to test display 
 
 Remote client software allows you to zoom and pan on the local view of your screen, and super-impose pixel grids and display crosshairs to pinpoint screen co-ordinates, taking some of the guess work out of screen design efforts.
 
-Tested with [QNEthernet](https://github.com/ssilverman/QNEthernet/) _(recommended)_ and [NativeEthernet](https://github.com/vjmuzik/NativeEthernet/) libraries. _(Note: there is a #define in remoteDisplay.h that needs to be changed to use NativeEthernet)_
+Tested with [QNEthernet](https://github.com/ssilverman/QNEthernet/) _(recommended)_ and [NativeEthernet](https://github.com/vjmuzik/NativeEthernet/) libraries, and SerialUSB1. _(Note: there is a #define in remoteDisplay.h that needs to be changed to use NativeEthernet)_
 
 ## Setup
 
-This assumes you already have Ethernet connectivity and code setup. Refer to the examples and Ethernet library documentation if you haven't already done so. Follow these **6** steps to implement:
+For Ethernet connections, this guide assumes you already have Ethernet connectivity and code setup. Refer to the examples and Ethernet library documentation if you haven't already done so. Follow these **6** steps to implement:
 
-**Step 1:** Uncomment / comment out the appropriate lines at the start of RemoteDisplay.h to enable QNEthernet or NativeEthernet
+**Step 1 (Ethernet):** For Ethernet, uncomment / comment out the appropriate lines at the top of _RemoteDisplay.h_ to enable QNEthernet or NativeEthernet
+
+**Step 1 (SerialUSB):** By default, this requires you enable the dual serial or triple serial build options, so that SerialUSB1 can be used to send data without interfering with your existing Serial read/writes/prints. This can be set from the Arduino IDE from the 'Tools...USB Type' menu item,
+or set in platformio.ini by adding a `build_flag` `-D USB_DUAL_SERIAL`  or  `-D USB_TRIPLE_SERIAL`. Alternatively, you can skip this, and edit the #define at the top of _RemoteDisplay.h_ to use `USBSerial`
 
 
 **Step 2:** Include the library and declare an instance of RemoteDisplay:
@@ -33,10 +36,10 @@ This assumes you already have Ethernet connectivity and code setup. Refer to the
 RemoteDisplay remoteDisplay;
   ```
 
-**Step 3:** After an Ethernet connection is established, initialize the library, providing the width and height of the desired display, and a valid port number to listen for UDP connections:
+**Step 3:** Initialize the library (after an Ethernet connection is established, for Ethernet), providing the width and height of the desired display, and (optionally) a valid port number to listen for UDP connections:
 
   ```c++
-remoteDisplay.init(SCREENWIDTH, SCREENHEIGHT, portNumber);
+remoteDisplay.init(SCREENWIDTH, SCREENHEIGHT, udpPortNumber);
   ```
 
 **Step 4:** Register callbacks to be executed when the client software requests a full display refresh (essential but optional), detects a touch event (optional) or issues a command (optional):
@@ -85,18 +88,18 @@ If you registered a touch callback, it will be called if the `pollRemoteCommand(
 `remoteDisplay.lastRemoteTouchX` - X co-ordinate of last touch sent from remote client
 `remoteDisplay.lastRemoteTouchY` - Y co-ordinate of last touch sent from remote client
 
-The client software has an interface that provides a mechanism to control if buffer updates are sent to the physical screen, or not, potentially improving performance for the network send by disabling the local screen buffer flush. This sets `remoteDisplay.disableLocalScreen` to true or false, and you can check this before sending your buffer updates to the physical screen.
+The client software has an interface that provides a mechanism to control if buffer updates are also sent to the physical screen, or not, improving performance by disabling the local screen buffer flush. This interface sets `remoteDisplay.disableLocalScreen` to true or false, and you can check this before sending your buffer updates to the physical screen.
 
-The client software typically initiates the connection to the Teensy, but you can call `remoteDisplay.connectRemote(IPAddress)` from the Teensy, supplying it's IP address, to initiate the connection. This is useful if you wish to auto-reconnect after a reboot, for instance.
+The client software typically initiates the connection to the Teensy, but you can call `remoteDisplay.connectRemote(IPAddress)` from the Teensy, supplying it's IP address, to initiate an Ethernet connection. This is useful if you wish to auto-reconnect after a reboot, for instance.
 
 ## Performance
 
-RemoteDisplay uses escaped run-length encoding to compress the data before sending over the network. For performance reasons, it is beneficial to reduce the amount of data transfered over the network, but not at the expense of a complex compression algorithm consuming even more time. RemoteDisplay was tested without compression, with RLE encoding, and with both an 8 bit and 16 bit value for run-length in escaped RLE encoding. In all data scenarios (simple UI, complex UI, images, 24fps full screen video), 8 bit escaped RLE encoding performed the best, achieving the best compression / least overhead for compression, and a significant performance improvement compared to just streaming the raw data. For simple to medium complexity UIs, compression ratios of 70-85% are typical. For MJPEG videos encoded in ffmpeg with quality 5, it achieves around 30-40% compression ratios. The remote client provides statistics on data received, compression ratios and additional information about the encoding, so you can make decisions around changing this, if you wish.
+RemoteDisplay uses escaped run-length encoding to compress the data before transmission. For performance reasons, it is beneficial to reduce the amount of data transfered, but not at the expense of a complex compression algorithm consuming even more time. RemoteDisplay was tested without compression, with RLE encoding, and with both an 8 bit and 16 bit value for run-length in escaped RLE encoding. In all data scenarios (simple UI, complex UI, images, 24fps full screen video), 8 bit escaped RLE encoding performed the best, achieving the best compression / least overhead for compression, and a significant performance improvement compared to just streaming the raw data. For simple to medium complexity UIs, compression ratios of 70-85% are typical. For MJPEG videos encoded in ffmpeg with quality 5, it achieves around 30-40% compression ratios. The remote client provides statistics on data received, compression ratios and additional information about the encoding, so you can make decisions around changing this, if you wish.
 
 ## Limitations
 
 - Only works with 16 bit RGB565 data
-- Uses UDP for data communication, which is not secure, nor guaranteed network packet delivery
+- Uses UDP or USBSerial for data communication, which is not secure, nor provides guaranteed packet delivery
 - Cannot solve world hunger
 
 ## Using the examples
@@ -110,15 +113,14 @@ To be continued....
 ## Todo
 
 - Release Android and iOS client software
-- Add callback for additional processing for connect/disconnect/enable local screen/disable local screen
 
 ## References
 
-* [Remote Display for LVGL Development](https://github.com/CubeCoders/LVGLRemoteServer) - the original inspiration for the Teensy-side code. This has been modified with improved compression (RLE escaped), smaller memory utilization, removal of LVGL dependency and additional UDP messages to help the client software functions. Brand new client software and features developed independently of this original codebase.
+* [Remote Display for LVGL Development](https://github.com/CubeCoders/LVGLRemoteServer) - the original inspiration for the Teensy-side code. This has been modified with improved compression (RLE escaped), smaller memory utilization, removal of LVGL dependency, serial port communication, and additional message packets to help the client software functions. Client software and features developed independently of this original codebase.
 
 ## License
 
 This library is distributed under the "AGPL-3.0-or-later" license. Please contact the author if you wish to inquire about other license options.
 ---
 
-Copyright (c) 2024 Ian Wall
+Copyright (c) 2024-2025 Ian Wall

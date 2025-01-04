@@ -6,16 +6,24 @@ FLASHMEM void RemoteDisplay::init(uint16_t inScreenWidth, uint16_t inScreenHeigh
     screenWidth = inScreenWidth;
     screenHeight = inScreenHeight;
     portStream = inPortStream;
+
     sendRemoteScreen = false;
     disableLocalScreen = false;
 
     Serial.printf("In RemoteDisplay::init, port: %d\n", portStream);
 
     //Start listening
-    bool result = udpStream.begin(portStream);
-    if (result != 1) {
-        Serial.printf("Error with UDP.begin on port %d\n", portStream);
+
+    //Ethernet
+    if (portStream > 0) {
+        bool result = udpStream.begin(portStream);
+        if (result != 1) {
+            Serial.printf("Error with UDP.begin on port %d\n", portStream);
+        }
     }
+
+    //Serial
+    REM_SERIALOUT.begin(115'200);
 }
 
 FLASHMEM void  RemoteDisplay::registerRefreshCallback(refresh_callback_t inRefreshCallback)
@@ -39,14 +47,32 @@ FLASHMEM void  RemoteDisplay::registerCommandCallback(command_callback_t inComma
     commandCallback = inCommandCallback;
 }
 
-FLASHMEM void RemoteDisplay::connectRemote(IPAddress ipRemote)
+FLASHMEM void RemoteDisplay::connectRemoteEthernet(IPAddress ipRemote)
 {
-    Serial.printf("In RemoteDisplay::connectRemote, udpStream.begin, ipAddress: %d.%d.%d.%d, port: %d, blockSize: %d\n", ipRemote[0], ipRemote[1], ipRemote[2], ipRemote[3], portStream, MAX_PACKET_SIZE);
+    Serial.printf("In RemoteDisplay::connectRemoteEthernet, ipAddress: %d.%d.%d.%d, port: %d, blockSize: %d\n", ipRemote[0], ipRemote[1], ipRemote[2], ipRemote[3], portStream, MAX_ETH_PACKET_SIZE);
 
     udpAddress = ipRemote;
+    connectionType = SEND_ETHERNET;
+    connectRemote();
+}
+
+FLASHMEM void RemoteDisplay::connectRemoteSerial()
+{
+    Serial.printf("In RemoteDisplay::connectRemoteSerial, blockSize: %d\n", MAX_USB_PACKET_SIZE);
+
+    connectionType = SEND_USBSERIAL;
+    serialFailedCount = 0;
+    connectRemote();
+}
+
+FLASHMEM void RemoteDisplay::connectRemote()
+{
     sendRemoteScreen = true;
 
+    Serial.printf("In RemoteDisplay::connectRemote, sending INIT_REMOTE\n");
     sendHeader(INIT_REMOTE, 0);
+
+    //Send initial full display refresh
     refreshDisplay();
 
     if (commandCallback) {
@@ -59,6 +85,7 @@ FLASHMEM void RemoteDisplay::disconnectRemote()
     Serial.printf("In RemoteDisplay::disconnectRemote\n");
 
     sendRemoteScreen = false;
+    connectionType = SEND_NONE;
 
     if (commandCallback) {
         commandCallback(CMD_DISCONNECT);
@@ -74,7 +101,7 @@ FLASHMEM void RemoteDisplay::refreshDisplay()
     }
 }
 
-FASTRUN void RemoteDisplay::sendData(const uint16_t x1, const uint16_t y1, const uint16_t x2, const uint16_t y2, uint8_t *pixelmap)
+FASTRUN void RemoteDisplay::sendData(const uint16_t x1, const uint16_t y1, const uint16_t x2, const uint16_t y2, uint8_t * pixelmap)
 {
     //Serial.printf("In RemoteDisplay::sendData, area: x1: %ld y1: %ld x2:%ld y2:%ld\n", x1, y1, x2, y2);
 
@@ -82,18 +109,19 @@ FASTRUN void RemoteDisplay::sendData(const uint16_t x1, const uint16_t y1, const
         return;
     }
 
+    const uint8_t * transBufferEndPtr = transBufferStart + (connectionType == SEND_ETHERNET ? MAX_ETH_PACKET_SIZE : MAX_USB_PACKET_SIZE);
+
     rlePacket.controlValue = RLE_ESCAPED_8_DATA;
     rlePacket.x = x1;
     rlePacket.y = y1;
     rlePacket.width = (x2 - x1 + 1);
     rlePacket.progressStart = 0;
 
-    uint32_t fullHeight = (y2 - y1 + 1);
-    uint32_t totalPixels = rlePacket.width * fullHeight;
+    uint32_t totalPixels = rlePacket.width * (y2 - y1 + 1);
 
     sendHeader(RLE_ESCAPED_8_HEADER, totalPixels);
 
-    uint16_t runLength = 1; // Current run length
+    uint8_t runLength = 1; // Current run length
     uint32_t pixelsInPacket = 0;
 
     uint8_t * dataBufferPtr = (uint8_t *)transBufferStart;
@@ -110,23 +138,14 @@ FASTRUN void RemoteDisplay::sendData(const uint16_t x1, const uint16_t y1, const
         uint16_t color = *pixelPtr;
 
         bool colorChanged = (pixelPtr == (pixelPtrEnd - 1)) || (color != lastColor);
-        bool bufferFull = (dataBufferPtr >= transBufferEndPtr - (runLength == 1 ? 2 : 5));
+        bool bufferFull = (dataBufferPtr >= transBufferEndPtr - 3);
 
         if (colorChanged || (runLength == 255) || bufferFull)
         {
             // Add the current run to the RLE buffer
-            if (runLength == 1) {
-                //Just add the color
-                *dataBufferPtr++ = lastColor;
-                *dataBufferPtr++ = lastColor >> 8;
-            } else {
-                //Add color twice, and run length
-                *dataBufferPtr++ = lastColor;
-                *dataBufferPtr++ = lastColor >> 8;
-                *dataBufferPtr++ = lastColor;
-                *dataBufferPtr++ = lastColor >> 8;
-                *dataBufferPtr++ = runLength;
-            }
+            *dataBufferPtr++ = lastColor >> 8;
+            *dataBufferPtr++ = lastColor;
+            *dataBufferPtr++ = runLength;
 
             pixelsInPacket += runLength;
 
@@ -152,18 +171,10 @@ FASTRUN void RemoteDisplay::sendData(const uint16_t x1, const uint16_t y1, const
         pixelPtr++;
     }
     //Send last
-    if (runLength == 1) {
-        //Just add the color
-        *dataBufferPtr++ = lastColor;
-        *dataBufferPtr++ = lastColor >> 8;
-    } else {
-        //Add color twice, and run length
-        *dataBufferPtr++ = lastColor;
-        *dataBufferPtr++ = lastColor >> 8;
-        *dataBufferPtr++ = lastColor;
-        *dataBufferPtr++ = lastColor >> 8;
-        *dataBufferPtr++ = runLength;
-    }
+    *dataBufferPtr++ = lastColor >> 8;
+    *dataBufferPtr++ = lastColor;
+    *dataBufferPtr++ = runLength;
+
     pixelsInPacket += runLength;
     sendPacket((uint8_t *)&rlePacket, packetHeaderSize + (dataBufferPtr - transBufferStart));
 
@@ -182,13 +193,27 @@ FASTRUN void RemoteDisplay::pollRemoteCommand()
     //Serial.printf("In RemoteDisplay::pollRemoteCommand\n");
 
     uint8_t remoteStatus = 0;
+    int32_t packetSize = 0;
     char incomingPacketBuffer[5]; // 1 byte status + 2x 16-bit integers for X and Y
 
-    uint32_t packetSize = udpStream.parsePacket();
+    //Check network
+    packetSize = udpStream.parsePacket();
     if (packetSize == 5) // We expect a 5-byte packet
     {
         udpStream.read(incomingPacketBuffer, 5);
+    }
 
+    if (packetSize == -1) {
+        //Nothing from network, check serial
+        uint16_t readAvailable = REM_SERIALOUT.available();
+        if (readAvailable > 0) {
+            //Read data from the USB port
+            packetSize = REM_SERIALOUT.readBytes((char *)incomingPacketBuffer, 5);
+        }
+    }
+
+    if (packetSize == 5)
+    {
         // Extract touch data from packet
         remoteStatus = incomingPacketBuffer[0];
         int16_t remoteX = (incomingPacketBuffer[1] << 8) | incomingPacketBuffer[2]; // High byte first
@@ -204,8 +229,8 @@ FASTRUN void RemoteDisplay::pollRemoteCommand()
                     touchCallback(remoteX, remoteY, lastRemoteTouchState);
                 }
                 break;
-            case 2: //Connect
-                connectRemote(udpStream.remoteIP());
+            case 2: //Connect ethernet
+                connectRemoteEthernet(udpStream.remoteIP());
                 break;
             case 3: //Disconnect
                 disconnectRemote();
@@ -218,6 +243,9 @@ FASTRUN void RemoteDisplay::pollRemoteCommand()
                 if (commandCallback) {
                     commandCallback(disableLocalScreen ? CMD_DISABLE_SCREEN : CMD_ENABLE_SCREEN);
                 }
+                break;
+            case 6: //Connect serial
+                connectRemoteSerial();
                 break;
         }
     }
@@ -239,15 +267,47 @@ FASTRUN void RemoteDisplay::sendHeader(uint16_t controlValue, uint32_t extraData
 
 FASTRUN void RemoteDisplay::sendPacket(uint8_t * buffer, uint32_t packetSize)
 {
-    //Send the packet via udpStream
-    int result = udpStream.beginPacket(udpAddress, portStream);
-    if (result == 1) {
-        udpStream.write(buffer, packetSize);
-        result = udpStream.endPacket();
-        if (result == 0) {
-            Serial.printf("Error from endPacket\n");
+    if (connectionType == SEND_ETHERNET) {
+        //Send the packet via udpStream
+        int result = udpStream.beginPacket(udpAddress, portStream);
+        if (result == 1) {
+            udpStream.write(buffer, packetSize);
+            result = udpStream.endPacket();
+            if (result == 0) {
+                Serial.printf("Error from endPacket\n");
+            }
+        } else {
+            Serial.printf("Error from beginPacket, udpAddress: %d.%d.%d.%d, portStream: %d\n", udpAddress[0], udpAddress[1], udpAddress[2], udpAddress[3], portStream);
         }
-    } else {
-        Serial.printf("Error from beginPacket, udpAddress: %d.%d.%d.%d, portStream: %d\n", udpAddress[0], udpAddress[1], udpAddress[2], udpAddress[3], portStream);
+        return;
+    }
+
+    if (connectionType == SEND_USBSERIAL) {
+
+        //Wait for REM_SERIALOUT write to be available
+        bool timeout = false;
+        uint32_t start = micros();
+
+        //while - typically 0-3uS but if remote disconnects suddenly, will timeout here
+        while ((uint32_t)REM_SERIALOUT.availableForWrite() < (packetSize + 4) && timeout == false) {
+            //Waiting...
+            if (micros() > (start + serialTimeoutMicros)) {
+                timeout = true;
+            }
+        };
+        //Send the packet via USB
+        if (timeout == false) {
+            REM_SERIALOUT.write(buffer, packetSize);
+            REM_SERIALOUT.write("DZQZ");
+            REM_SERIALOUT.send_now();
+            serialFailedCount = 0;
+            //delayMicroseconds(75);
+        } else {
+            serialFailedCount += 1;
+            if (serialFailedCount == 100) {
+                Serial.printf("Failed to send %d packets, disconnecting remote\n", serialFailedCount);
+                disconnectRemote();
+            }
+        }
     }
 }
