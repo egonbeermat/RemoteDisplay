@@ -85,6 +85,7 @@ FLASHMEM void RemoteDisplay::disconnectRemote()
     Serial.printf("In RemoteDisplay::disconnectRemote\n");
 
     sendRemoteScreen = false;
+    disableLocalScreen = false;
     connectionType = SEND_NONE;
 
     if (commandCallback) {
@@ -289,19 +290,21 @@ FASTRUN void RemoteDisplay::sendPacket(uint8_t * buffer, uint32_t packetSize)
         uint32_t start = micros();
 
         //while - typically 0-3uS but if remote disconnects suddenly, will timeout here
-        while ((uint32_t)REM_SERIALOUT.availableForWrite() < (packetSize + 4) && timeout == false) {
+        while ((uint32_t)REM_SERIALOUT.availableForWrite() < ((packetSize + 8)) && timeout == false) {
             //Waiting...
             if (micros() > (start + serialTimeoutMicros)) {
                 timeout = true;
             }
         };
+
         //Send the packet via USB
         if (timeout == false) {
+            REM_SERIALOUT.write("DZQZ");
             REM_SERIALOUT.write(buffer, packetSize);
             REM_SERIALOUT.write("DZQZ");
             REM_SERIALOUT.send_now();
             serialFailedCount = 0;
-            delayMicroseconds(75);
+            //delayMicroseconds(75);
         } else {
             serialFailedCount += 1;
             if (serialFailedCount == 100) {

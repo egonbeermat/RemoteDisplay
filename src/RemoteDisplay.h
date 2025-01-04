@@ -23,7 +23,7 @@ using namespace qindesign::network;
 #define MAX_PACKET_SIZE(a, b) ((a) > (b) ? (a) : (b))
 
 #define MAX_ETH_PACKET_SIZE 1430
-#define MAX_USB_PACKET_SIZE 1002
+#define MAX_USB_PACKET_SIZE 1002 //1002 //2022 //4074
 
 class RemoteDisplay
 {

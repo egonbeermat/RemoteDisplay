@@ -33,6 +33,9 @@ or set in platformio.ini by adding a `build_flag` `-D USB_DUAL_SERIAL`  or  `-D 
 
   ```c++
   #include <RemoteDisplay.h>
+
+  ...
+
 RemoteDisplay remoteDisplay;
   ```
 
