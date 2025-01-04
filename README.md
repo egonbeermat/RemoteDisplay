@@ -46,8 +46,18 @@ remoteDisplay.init(SCREENWIDTH, SCREENHEIGHT, udpPortNumber);
 
   ```c++
 void  refreshDisplayCallback() {
-	// Called when the remote client requires a full screen refresh, such as on
-	// initial connection. No parameters
+	// Called when the remote client requires a full screen refresh, such as on initial connection. No parameters
+
+  /* LVGL example:
+
+  lv_area_t area;
+  area.x1 = 0;
+  area.y1 = 0;
+  area.x2 = SCREENWIDTH;
+  area.y2 = SCREENHEIGHT;
+
+  lv_obj_invalidate_area(lv_scr_act(), &area); // Invalidate this region on the active screen
+  */
 }
 void  remoteTouchCallback(uint16_t x, uint16_t y, uint8_t action) {
 	// Executed when remoteDisplay.readRemoteCommand() detects a touch event.

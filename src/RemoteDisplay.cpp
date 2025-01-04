@@ -301,7 +301,7 @@ FASTRUN void RemoteDisplay::sendPacket(uint8_t * buffer, uint32_t packetSize)
             REM_SERIALOUT.write("DZQZ");
             REM_SERIALOUT.send_now();
             serialFailedCount = 0;
-            //delayMicroseconds(75);
+            delayMicroseconds(75);
         } else {
             serialFailedCount += 1;
             if (serialFailedCount == 100) {
