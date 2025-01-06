@@ -23,7 +23,7 @@ using namespace qindesign::network;
 #define MAX_PACKET_SIZE(a, b) ((a) > (b) ? (a) : (b))
 
 #define MAX_ETH_PACKET_SIZE 1430
-#define MAX_USB_PACKET_SIZE 1002 //1002 //2022 //4074
+#define MAX_USB_PACKET_SIZE 2018 //998 //1002 //2022 //4074
 
 class RemoteDisplay
 {
@@ -56,6 +56,7 @@ public:
     uint16_t lastRemoteTouchY = 0;
 
 private:
+    const char * serialDelimiter = "DZQZ";
     const uint32_t serialTimeoutMicros = 5'000;
     uint8_t serialFailedCount = 0;
 

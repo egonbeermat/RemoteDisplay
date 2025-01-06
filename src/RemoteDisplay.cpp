@@ -289,8 +289,8 @@ FASTRUN void RemoteDisplay::sendPacket(uint8_t * buffer, uint32_t packetSize)
         bool timeout = false;
         uint32_t start = micros();
 
-        //while - typically 0-3uS but if remote disconnects suddenly, will timeout here
-        while ((uint32_t)REM_SERIALOUT.availableForWrite() < ((packetSize + 8)) && timeout == false) {
+        //Wait for REM_SERIALOUT write to be available - typically 0-3uS but if remote disconnects suddenly, will timeout here
+        while (((uint32_t)REM_SERIALOUT.availableForWrite() < ((packetSize + 8)) && timeout == false) || (REM_SERIALOUT.dtr() == false && timeout == false)) {
             //Waiting...
             if (micros() > (start + serialTimeoutMicros)) {
                 timeout = true;
@@ -299,9 +299,9 @@ FASTRUN void RemoteDisplay::sendPacket(uint8_t * buffer, uint32_t packetSize)
 
         //Send the packet via USB
         if (timeout == false) {
-            REM_SERIALOUT.write("DZQZ");
+            REM_SERIALOUT.write(serialDelimiter);
             REM_SERIALOUT.write(buffer, packetSize);
-            REM_SERIALOUT.write("DZQZ");
+            REM_SERIALOUT.write(serialDelimiter);
             REM_SERIALOUT.send_now();
             serialFailedCount = 0;
             //delayMicroseconds(75);
