@@ -310,7 +310,7 @@ FASTRUN void RemoteDisplay::sendPacket(uint8_t * buffer, uint32_t packetSize)
         uint32_t start = micros();
 
         //Wait for REM_SERIALOUT write to be available - typically 0-3uS but if remote disconnects suddenly, will timeout here
-        while (((uint32_t)REM_SERIALOUT.availableForWrite() < ((packetSize + 8)) && timeout == false) || (REM_SERIALOUT.dtr() == false && timeout == false)) {
+        while (((uint32_t)REM_SERIALOUT.availableForWrite() < ((packetSize + 8)) && timeout == false)) {
             //Waiting...
             if (micros() > (start + serialTimeoutMicros)) {
                 timeout = true;
