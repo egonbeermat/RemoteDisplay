@@ -23,7 +23,7 @@
 		<dict>
 			<key>cdhash</key>
 			<data>
-			2kKeI6XpldtNZmiFVTsNpAliofc=
+			Jncftz7Ajl/4nk830XsojCrgbs4=
 			</data>
 			<key>requirement</key>
 			<string>anchor apple generic and identifier "io.flutter.flutter.app" and (certificate leaf[field.1.2.840.113635.100.6.1.9] /* exists */ or certificate 1[field.1.2.840.113635.100.6.2.6] /* exists */ and certificate leaf[field.1.2.840.113635.100.6.1.13] /* exists */ and certificate leaf[subject.OU] = K42JS4D4A8)</string>
@@ -82,6 +82,15 @@
 			<key>requirement</key>
 			<string>anchor apple generic and identifier "org.cocoapods.path-provider-foundation" and (certificate leaf[field.1.2.840.113635.100.6.1.9] /* exists */ or certificate 1[field.1.2.840.113635.100.6.2.6] /* exists */ and certificate leaf[field.1.2.840.113635.100.6.1.13] /* exists */ and certificate leaf[subject.OU] = K42JS4D4A8)</string>
 		</dict>
+		<key>Frameworks/screen_retriever_macos.framework</key>
+		<dict>
+			<key>cdhash</key>
+			<data>
+			B/SPpis0XT8kuXInwX0TT8KiaWI=
+			</data>
+			<key>requirement</key>
+			<string>anchor apple generic and identifier "org.cocoapods.screen-retriever-macos" and (certificate leaf[field.1.2.840.113635.100.6.1.9] /* exists */ or certificate 1[field.1.2.840.113635.100.6.2.6] /* exists */ and certificate leaf[field.1.2.840.113635.100.6.1.13] /* exists */ and certificate leaf[subject.OU] = K42JS4D4A8)</string>
+		</dict>
 		<key>Frameworks/shared_preferences_foundation.framework</key>
 		<dict>
 			<key>cdhash</key>
@@ -90,6 +99,15 @@
 			</data>
 			<key>requirement</key>
 			<string>anchor apple generic and identifier "org.cocoapods.shared-preferences-foundation" and (certificate leaf[field.1.2.840.113635.100.6.1.9] /* exists */ or certificate 1[field.1.2.840.113635.100.6.2.6] /* exists */ and certificate leaf[field.1.2.840.113635.100.6.1.13] /* exists */ and certificate leaf[subject.OU] = K42JS4D4A8)</string>
+		</dict>
+		<key>Frameworks/window_manager.framework</key>
+		<dict>
+			<key>cdhash</key>
+			<data>
+			TtpT6PBjr8+VSIXHlgJArXTEcHM=
+			</data>
+			<key>requirement</key>
+			<string>anchor apple generic and identifier "org.cocoapods.window-manager" and (certificate leaf[field.1.2.840.113635.100.6.1.9] /* exists */ or certificate 1[field.1.2.840.113635.100.6.2.6] /* exists */ and certificate leaf[field.1.2.840.113635.100.6.1.13] /* exists */ and certificate leaf[subject.OU] = K42JS4D4A8)</string>
 		</dict>
 		<key>Resources/AppIcon.icns</key>
 		<dict>
