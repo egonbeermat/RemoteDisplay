@@ -51,6 +51,11 @@ FLASHMEM void RemoteDisplay::connectRemoteEthernet(IPAddress ipRemote)
 {
     Serial.printf("In RemoteDisplay::connectRemoteEthernet, ipAddress: %d.%d.%d.%d, port: %d, blockSize: %d\n", ipRemote[0], ipRemote[1], ipRemote[2], ipRemote[3], portStream, MAX_ETH_PACKET_SIZE);
 
+    //Clean up existing connection first
+    if (connectionType != SEND_NONE) {
+        disconnectRemote();
+    }
+
     udpAddress = ipRemote;
     connectionType = SEND_ETHERNET;
     connectRemote();
@@ -60,8 +65,13 @@ FLASHMEM void RemoteDisplay::connectRemoteSerial()
 {
     Serial.printf("In RemoteDisplay::connectRemoteSerial, blockSize: %d\n", MAX_USB_PACKET_SIZE);
 
-    connectionType = SEND_USBSERIAL;
+    //Clean up existing connection first
+    if (connectionType != SEND_NONE) {
+        disconnectRemote();
+    }
+
     serialFailedCount = 0;
+    connectionType = SEND_USBSERIAL;
     connectRemote();
 }
 
@@ -86,6 +96,12 @@ FLASHMEM void RemoteDisplay::disconnectRemote()
 
     sendRemoteScreen = false;
     disableLocalScreen = false;
+
+    if (connectionType == SEND_USBSERIAL) {
+        //Cleanup in-flight data
+        REM_SERIALOUT.clear();
+        REM_SERIALOUT.flush();
+    }
     connectionType = SEND_NONE;
 
     if (commandCallback) {
@@ -151,7 +167,7 @@ FASTRUN void RemoteDisplay::sendData(const uint16_t x1, const uint16_t y1, const
             pixelsInPacket += runLength;
 
             // Send the RLE buffer if the buffer is full or if we've processed all pixels
-            if (bufferFull)
+            if (bufferFull == true)
             {
                 sendPacket((uint8_t *)&rlePacket, packetHeaderSize + (dataBufferPtr - (uint8_t *)transBufferStart));
 
@@ -192,8 +208,8 @@ FASTRUN void RemoteDisplay::sendData(const uint16_t x1, const uint16_t y1, const
 FASTRUN void RemoteDisplay::pollRemoteCommand()
 {
     //Serial.printf("In RemoteDisplay::pollRemoteCommand\n");
+    //Need to check both network and USBSerial as we could be sitting waiting for a new connection from either source
 
-    uint8_t remoteStatus = 0;
     int32_t packetSize = 0;
     char incomingPacketBuffer[5]; // 1 byte status + 2x 16-bit integers for X and Y
 
@@ -202,6 +218,7 @@ FASTRUN void RemoteDisplay::pollRemoteCommand()
     if (packetSize == 5) // We expect a 5-byte packet
     {
         udpStream.read(incomingPacketBuffer, 5);
+        processIncomingCommand(incomingPacketBuffer);
     }
 
     if (packetSize == -1) {
@@ -210,45 +227,48 @@ FASTRUN void RemoteDisplay::pollRemoteCommand()
         if (readAvailable > 0) {
             //Read data from the USB port
             packetSize = REM_SERIALOUT.readBytes((char *)incomingPacketBuffer, 5);
+            processIncomingCommand(incomingPacketBuffer);
         }
     }
+}
 
-    if (packetSize == 5)
-    {
-        // Extract touch data from packet
-        remoteStatus = incomingPacketBuffer[0];
-        int16_t remoteX = (incomingPacketBuffer[1] << 8) | incomingPacketBuffer[2]; // High byte first
-        int16_t remoteY = (incomingPacketBuffer[3] << 8) | incomingPacketBuffer[4]; // High byte first
+FASTRUN void RemoteDisplay::processIncomingCommand(const char * incomingPacketBuffer)
+{
+    uint8_t remoteStatus = 0;
 
-        switch (remoteStatus) {
-            case 0: //Pressed
-            case 1: //Released
-                lastRemoteTouchX = remoteX;
-                lastRemoteTouchY = remoteY;
-                lastRemoteTouchState = remoteStatus;
-                if (touchCallback) {
-                    touchCallback(remoteX, remoteY, lastRemoteTouchState);
-                }
-                break;
-            case 2: //Connect ethernet
-                connectRemoteEthernet(udpStream.remoteIP());
-                break;
-            case 3: //Disconnect
-                disconnectRemote();
-                break;
-            case 4: // Refresh the screen
-                refreshDisplay();
-                break;
-            case 5: //Toggle disable local screen
-                disableLocalScreen = !disableLocalScreen;
-                if (commandCallback) {
-                    commandCallback(disableLocalScreen ? CMD_DISABLE_SCREEN : CMD_ENABLE_SCREEN);
-                }
-                break;
-            case 6: //Connect serial
-                connectRemoteSerial();
-                break;
-        }
+    // Extract touch data from packet
+    remoteStatus = incomingPacketBuffer[0];
+    int16_t remoteX = (incomingPacketBuffer[1] << 8) | incomingPacketBuffer[2]; // High byte first
+    int16_t remoteY = (incomingPacketBuffer[3] << 8) | incomingPacketBuffer[4]; // High byte first
+
+    switch (remoteStatus) {
+        case 0: //Pressed
+        case 1: //Released
+            lastRemoteTouchX = remoteX;
+            lastRemoteTouchY = remoteY;
+            lastRemoteTouchState = remoteStatus;
+            if (touchCallback) {
+                touchCallback(remoteX, remoteY, lastRemoteTouchState);
+            }
+            break;
+        case 2: //Connect ethernet
+            connectRemoteEthernet(udpStream.remoteIP());
+            break;
+        case 3: //Disconnect
+            disconnectRemote();
+            break;
+        case 4: // Refresh the screen
+            refreshDisplay();
+            break;
+        case 5: //Toggle disable local screen
+            disableLocalScreen = !disableLocalScreen;
+            if (commandCallback) {
+                commandCallback(disableLocalScreen ? CMD_DISABLE_SCREEN : CMD_ENABLE_SCREEN);
+            }
+            break;
+        case 6: //Connect serial
+            connectRemoteSerial();
+            break;
     }
 }
 
@@ -297,14 +317,17 @@ FASTRUN void RemoteDisplay::sendPacket(uint8_t * buffer, uint32_t packetSize)
             }
         };
 
-        //Send the packet via USB
+        //Send the packet via USB, wrapped in delimiters
         if (timeout == false) {
-            REM_SERIALOUT.write(serialDelimiter);
-            REM_SERIALOUT.write(buffer, packetSize);
-            REM_SERIALOUT.write(serialDelimiter);
+            size_t writeBytes = REM_SERIALOUT.write(serialDelimiter);
+            writeBytes += REM_SERIALOUT.write(buffer, packetSize);
+            writeBytes += REM_SERIALOUT.write(serialDelimiter);
             REM_SERIALOUT.send_now();
             serialFailedCount = 0;
             //delayMicroseconds(75);
+            if (writeBytes != packetSize + 8) {
+                Serial.printf("Mismatch on serial.write, packetSize: %ld, wrote: %ld", (packetSize + 8), writeBytes);
+            }
         } else {
             serialFailedCount += 1;
             if (serialFailedCount == 100) {

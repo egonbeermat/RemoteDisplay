@@ -23,7 +23,7 @@ using namespace qindesign::network;
 #define MAX_PACKET_SIZE(a, b) ((a) > (b) ? (a) : (b))
 
 #define MAX_ETH_PACKET_SIZE 1430
-#define MAX_USB_PACKET_SIZE 2018 //998 //1002 //2022 //4074
+#define MAX_USB_PACKET_SIZE 2022 //Tested - 1002 //2022 //4074
 
 class RemoteDisplay
 {
@@ -101,6 +101,7 @@ private:
     command_callback_t commandCallback;
 
     void connectRemote();
+    void processIncomingCommand(const char * incomingPacketBuffer);
     void refreshDisplay();
     void sendHeader(uint16_t controlValue, uint32_t extraData);
     void sendPacket(uint8_t * buffer, uint32_t packetSize);
