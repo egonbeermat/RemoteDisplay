@@ -1,6 +1,5 @@
 
-# _RemoteDisplay_, a library to send Teensy 4.x screen buffers over Ethernet or SerialUSB to display on another device
-
+# _RemoteDisplay_ - send Teensy 4.x screen buffers over Ethernet or SerialUSB to display on your desktop
 _Version: 0.2.0_
 
 The _RemoteDisplay_ library, in conjunction with the supplied [Windows](https://github.com/egonbeermat/RemoteDisplay/tree/main/clientsoftware/Windows) and [MacOS](https://github.com/egonbeermat/RemoteDisplay/tree/main/clientsoftware/MacOS) client software, provides the ability to remotely display and control your Teensy 4.x screen from your desktop over Ethernet or SerialUSB.
@@ -11,7 +10,7 @@ Demo of this in action, streaming from a Teensy 4.x running an LVGL driven displ
 
 https://youtu.be/TxMsTKo4VVM
 
-If your Teensy 4.x uses a screen buffer and transmits screen updates to an attached physical display using a standard pattern of defining an area x, y, w, h, and a pointer to a 16 bit RGB565 color buffer for the pixels, you can use this library to compress and send that buffer to display on your desktop, using the included client software. Additionally, you can link touch controls on the desktop into your code on the Teensy 4.x, allowing full remote operation of your device.
+If your Teensy 4.x uses a screen buffer and transmits screen updates using a standard pattern of defining an area x, y, w, h, and a pointer to a 16 bit RGB565 color buffer for the pixels, you can use this library to compress and send that buffer to display on your desktop, using the included client software. Additionally, you can link touch controls on the desktop into your code on the Teensy 4.x, allowing full remote operation of your device.
 
 Use this for operating your device easily whilst developing, or to test display code without having a physical screen to display on, or to test different resolutions on the remote display, without having a physical screen that supports that resolution.
 
@@ -19,14 +18,51 @@ Remote client software allows you to zoom and pan on the local view of your scre
 
 Tested with [QNEthernet](https://github.com/ssilverman/QNEthernet/) _(recommended)_ and [NativeEthernet](https://github.com/vjmuzik/NativeEthernet/) libraries, and SerialUSB1. _(Note: there is a #define in remoteDisplay.h that needs to be changed to use NativeEthernet)_
 
-## Setup
+## Quick Start
+
+```c++
+#include <RemoteDisplay.h>
+
+...
+
+RemoteDisplay remoteDisplay;
+
+...
+
+void setup() {
+...
+    //Add this to initialize remoteDisplay. udpPortNumber is optional for SerialUSB
+    remoteDisplay.init(SCREENWIDTH, SCREENHEIGHT, udpPortNumber);
+...
+}
+
+void loop() {
+...
+    //Add this to poll remoteDisplay periodically to receive connect, commands, mouse, etc.
+    remoteDisplay.pollRemoteCommand();
+...
+}
+
+void flushBuffer(uint16_t x1, uint16_t x2, uint16_t y1, uint16_t y2, uint16_t * buffer) {
+
+    //Add this to your existing flushBuffer code to send the x1, y1, x2, y2 rectangle of RGB565 pixels
+    if (remoteDisplay.sendRemoteScreen == true) {
+        remoteDisplay.sendData(x1, y1, x2, y2, (uint8_t *)buffer);
+    }
+
+}
+```
+
+## Detailed Setup
 
 For Ethernet connections, this guide assumes you already have Ethernet connectivity and code setup. Refer to the examples and Ethernet library documentation if you haven't already done so. Follow these **6** steps to implement:
 
 **Step 1 (Ethernet):** For Ethernet, uncomment / comment out the appropriate lines at the top of _RemoteDisplay.h_ to enable QNEthernet or NativeEthernet
 
-**Step 1 (SerialUSB):** By default, this requires you enable the dual serial or triple serial build options, so that SerialUSB1 can be used to send data without interfering with your existing Serial read/writes/prints. This can be set from the Arduino IDE from the 'Tools...USB Type' menu item,
-or set in platformio.ini by adding a `build_flag` `-D USB_DUAL_SERIAL`  or  `-D USB_TRIPLE_SERIAL`. Alternatively, you can skip this, and edit the #define at the top of _RemoteDisplay.h_ to use `USBSerial`
+**Step 1 (SerialUSB):** By default, this requires you enable the dual serial or triple serial build options, so that SerialUSB1 can be used to send data without interfering with your existing Serial read/writes/prints:
+- **Arduino IDE** - Select 'Dual Serial' or 'Triple Serial' from the 'Tools...USB Type' menu item
+- **PlatformIO** - in platformio.ini, add `build_flag` `-D USB_DUAL_SERIAL`  or  `-D USB_TRIPLE_SERIAL`.
+Alternatively, you can skip this, and edit the #define at the top of _RemoteDisplay.h_ to use `USBSerial`
 
 
 **Step 2:** Include the library and declare an instance of RemoteDisplay:
@@ -45,9 +81,13 @@ RemoteDisplay remoteDisplay;
 remoteDisplay.init(SCREENWIDTH, SCREENHEIGHT, udpPortNumber);
   ```
 
-**Step 4:** Register callbacks to be executed when the client software requests a full display refresh (essential but optional), detects a touch event (optional) or issues a command (optional):
+**Step 4:** Register callbacks to be executed when the client software:
 
-  ```c++
+- requests full display refresh (essential but optional)
+- detects a touch event (optional)
+- issues a command (optional)
+
+```c++
 void  refreshDisplayCallback() {
 	// Called when the client requires a full screen refresh, such as on initial connection
 
@@ -117,7 +157,7 @@ RemoteDisplay uses escaped run-length encoding to compress the data before trans
 
 ## Known issues
 
-- Occasionally suffers from dropped packets over Serial
+- Occasionally suffers from small number of dropped packets over SerialUSB
 
 ## Using the examples
 

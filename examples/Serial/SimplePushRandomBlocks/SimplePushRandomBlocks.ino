@@ -1,20 +1,13 @@
 // SPDX-FileCopyrightText: (c) 2024-2025 Ian Wall <egonbeermat@gmail.com>
 // SPDX-License-Identifier: AGPL-3.0-or-later
 
-// SimpleHTTPClient implements a simple example to push random small blocks
+// SimplePushRandomBlocks implements a simple example to push random small blocks
 // to the remote display client software, and respond to touch on the remote
 // client by drawing a red block at the touch site
 
-// QNEthernet
-#include <QNEthernet.h>
-using namespace qindesign::network;
+// Remember to use Tools...USB TYpe menu to select Dual Serial or Triple Serial
 
-// Where we're at and what we're doing
-enum class States {kStart, kConnect, kSendRequest};
-States state = States::kStart;
-bool gotIP = false;  // Watch for when we get an IP
-
-// Block buffers for demo
+// Block buffers
 uint16_t blockcolorbuf[16] = {0xBBBB, 0xBBBB, 0xBBBB, 0xBBBB, 0xBBBB, 0xBBBB, 0xBBBB, 0xBBBB, 0xBBBB, 0xBBBB, 0xBBBB, 0xBBBB, 0xBBBB, 0xBBBB, 0xBBBB, 0xBBBB};
 uint16_t mousecolorbuf[16] = {0xF800, 0xF800, 0xF800, 0xF800, 0xF800, 0xF800, 0xF800, 0xF800, 0xF800, 0xF800, 0xF800, 0xF800, 0xF800, 0xF800, 0xF800, 0xF800};
 
@@ -25,9 +18,6 @@ RemoteDisplay remoteDisplay;
 // Screen dimensions to send to remote client
 uint16_t SCREENWIDTH = 800;
 uint16_t SCREENHEIGHT = 480;
-
-// UDP port to communicate with remote client
-uint16_t portNumber = 2347;
 
 // This is registered as a callback, and executed when the client first starts receiving screen
 // updates, so it can start with a full image of the screen. It will also be called periodically
@@ -70,59 +60,24 @@ void setup() {
   }
   Serial.println("Starting...");
 
-  // Watch for address changes
-  // It will take a little time to get an IP address, so watch for it
-  Ethernet.onAddressChanged([]() {
-    IPAddress ip = Ethernet.localIP();
-    bool hasIP = (ip != INADDR_NONE);
-    if (hasIP) {
-      gotIP = true;
-      Serial.printf("[Ethernet] Address changed: IP = %u.%u.%u.%u",
-                    ip[0], ip[1], ip[2], ip[3]);
-      Serial.println();
-    } else {
-      Serial.println("[Ethernet] Address changed: No IP");
-    }
-  });
+  // Initialize RemoteDisplay
+  remoteDisplay.init(SCREENWIDTH, SCREENHEIGHT);
 
-  // Initialize QNEthernet
-  if (!Ethernet.begin()) {
-    Serial.println("ERROR: Failed to start Ethernet");
-    return;
-  }
+  // Register callbacks
+  remoteDisplay.registerRefreshCallback(refreshDisplayCallback);
+  remoteDisplay.registerTouchCallback(remoteTouchCallback);
 }
 
 // Main program loop
 void loop() {
-  switch (state) {
-    case States::kStart:
-      if (gotIP == true) {
-        state = States::kConnect;
-      }
-      break;
 
-    case States::kConnect:
-      // Ethernet connected, initialize remote display
-      remoteDisplay.init(SCREENWIDTH, SCREENHEIGHT, portNumber);
+  remoteDisplay.pollRemoteCommand();
 
-      // Register callbacks
-      remoteDisplay.registerRefreshCallback(refreshDisplayCallback);
-      remoteDisplay.registerTouchCallback(remoteTouchCallback);
-
-      state = States::kSendRequest;
-      break;
-
-    case States::kSendRequest:
-      // Poll remoteDisplay to read commands from the client, such as connect/disconnect, and touch events
-      remoteDisplay.pollRemoteCommand();
-
-      // If the client connection was initiated from the client, sendRemoteScreen will be true, and we can send updates
-      if (remoteDisplay.sendRemoteScreen == true) {
-        uint16_t x = random(SCREENWIDTH - 4);
-        uint16_t y = random(SCREENHEIGHT - 4);
-        remoteDisplay.sendData(x, y, x + 3, y + 3, (uint8_t *)blockcolorbuf);
-      }
-      delay(20);
-      break;
+  // If the client connection was initiated from the client, sendRemoteScreen will be true, and we can send updates
+  if (remoteDisplay.sendRemoteScreen == true) {
+    uint16_t x = random(SCREENWIDTH - 4);
+    uint16_t y = random(SCREENHEIGHT - 4);
+    remoteDisplay.sendData(x, y, x + 3, y + 3, (uint8_t *)blockcolorbuf);
   }
+  delay(20);
 }
