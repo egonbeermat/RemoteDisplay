@@ -125,7 +125,7 @@ void loop() {
 ...
 }
 ```
-**Step 6:** To transmit buffer updates to the remote client, if the remote client is connected, call `sendData` with parameters x1, y1, x2, y2 (the bounds of the update rectangle) and a pointer to a buffer **only** containing 16 bit RGB565 color values for the area to be updated:
+**Step 6:** To transmit buffer updates to the remote client, if the remote client is connected, call `sendData` with parameters x1, y1, x2, y2 (the top-left / bottom-right bounds of the update rectangle) and a pointer to a buffer **only** containing 16 bit RGB565 color values for the area to be updated:
 
 ```c++
 if (remoteDisplay.sendRemoteScreen == true) {
