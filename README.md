@@ -57,7 +57,7 @@ void flushBuffer(uint16_t x1, uint16_t x2, uint16_t y1, uint16_t y2, uint16_t * 
 
 For Ethernet connections, this guide assumes you already have Ethernet connectivity and code setup. Refer to the examples and Ethernet library documentation if you haven't already done so. Follow these **6** steps to implement:
 
-**Step 1 (Ethernet):** For Ethernet, uncomment / comment out the appropriate lines at the top of _RemoteDisplay.h_ to enable QNEthernet or NativeEthernet
+**Step 1 (Ethernet):** For Ethernet,  at the top of _RemoteDisplay.h_, uncomment USE_ETHERNET and uncomment / comment out the appropriate lines to enable QNEthernet or NativeEthernet
 
 **Step 1 (SerialUSB):** By default, this requires you enable the dual serial or triple serial build options, so that SerialUSB1 can be used to send data without interfering with your existing Serial read/writes/prints:
 - **Arduino IDE** - Select 'Dual Serial' or 'Triple Serial' from the 'Tools...USB Type' menu item

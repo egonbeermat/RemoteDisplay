@@ -13,14 +13,15 @@ FLASHMEM void RemoteDisplay::init(uint16_t inScreenWidth, uint16_t inScreenHeigh
     Serial.printf("In RemoteDisplay::init, port: %d\n", portStream);
 
     //Start listening
-
-    //Ethernet
-    if (portStream > 0) {
-        bool result = udpStream.begin(portStream);
-        if (result != 1) {
-            Serial.printf("Error with UDP.begin on port %d\n", portStream);
-        }
+#if defined(USE_ETHERNET)
+//Ethernet
+if (portStream > 0) {
+    bool result = udpStream.begin(portStream);
+    if (result != 1) {
+        Serial.printf("Error with UDP.begin on port %d\n", portStream);
     }
+}
+#endif // USE_ETHERNET
 
     //Serial
     REM_SERIALOUT.begin(115'200);
@@ -46,20 +47,21 @@ FLASHMEM void  RemoteDisplay::registerCommandCallback(command_callback_t inComma
 
     commandCallback = inCommandCallback;
 }
-
+#if defined(USE_ETHERNET)
 FLASHMEM void RemoteDisplay::connectRemoteEthernet(IPAddress ipRemote)
 {
     Serial.printf("In RemoteDisplay::connectRemoteEthernet, ipAddress: %d.%d.%d.%d, port: %d, blockSize: %d\n", ipRemote[0], ipRemote[1], ipRemote[2], ipRemote[3], portStream, MAX_ETH_PACKET_SIZE);
-
+    
     //Clean up existing connection first
     if (connectionType != SEND_NONE) {
         disconnectRemote();
     }
-
+    
     udpAddress = ipRemote;
     connectionType = SEND_ETHERNET;
     connectRemote();
 }
+#endif // USE_ETHERNET
 
 FLASHMEM void RemoteDisplay::connectRemoteSerial()
 {
@@ -210,16 +212,18 @@ FASTRUN void RemoteDisplay::pollRemoteCommand()
     //Serial.printf("In RemoteDisplay::pollRemoteCommand\n");
     //Need to check both network and USBSerial as we could be sitting waiting for a new connection from either source
 
-    int32_t packetSize = 0;
+    int32_t packetSize = -1;
     char incomingPacketBuffer[5]; // 1 byte status + 2x 16-bit integers for X and Y
 
-    //Check network
-    packetSize = udpStream.parsePacket();
-    if (packetSize == 5) // We expect a 5-byte packet
-    {
-        udpStream.read(incomingPacketBuffer, 5);
-        processIncomingCommand(incomingPacketBuffer);
-    }
+#if defined(USE_ETHERNET)
+//Check network
+packetSize = udpStream.parsePacket();
+if (packetSize == 5) // We expect a 5-byte packet
+{
+    udpStream.read(incomingPacketBuffer, 5);
+    processIncomingCommand(incomingPacketBuffer);
+}
+#endif // USE_ETHERNET
 
     if (packetSize == -1) {
         //Nothing from network, check serial
@@ -252,7 +256,9 @@ FASTRUN void RemoteDisplay::processIncomingCommand(const char * incomingPacketBu
             }
             break;
         case 2: //Connect ethernet
+#if defined(USE_ETHERNET)
             connectRemoteEthernet(udpStream.remoteIP());
+#endif // USE_ETHERNET
             break;
         case 3: //Disconnect
             disconnectRemote();
@@ -288,20 +294,22 @@ FASTRUN void RemoteDisplay::sendHeader(uint16_t controlValue, uint32_t extraData
 
 FASTRUN void RemoteDisplay::sendPacket(uint8_t * buffer, uint32_t packetSize)
 {
-    if (connectionType == SEND_ETHERNET) {
-        //Send the packet via udpStream
-        int result = udpStream.beginPacket(udpAddress, portStream);
-        if (result == 1) {
-            udpStream.write(buffer, packetSize);
-            result = udpStream.endPacket();
-            if (result == 0) {
-                Serial.printf("Error from endPacket\n");
-            }
-        } else {
-            Serial.printf("Error from beginPacket, udpAddress: %d.%d.%d.%d, portStream: %d\n", udpAddress[0], udpAddress[1], udpAddress[2], udpAddress[3], portStream);
+#if defined(USE_ETHERNET)
+if (connectionType == SEND_ETHERNET) {
+    //Send the packet via udpStream
+    int result = udpStream.beginPacket(udpAddress, portStream);
+    if (result == 1) {
+        udpStream.write(buffer, packetSize);
+        result = udpStream.endPacket();
+        if (result == 0) {
+            Serial.printf("Error from endPacket\n");
         }
-        return;
+    } else {
+        Serial.printf("Error from beginPacket, udpAddress: %d.%d.%d.%d, portStream: %d\n", udpAddress[0], udpAddress[1], udpAddress[2], udpAddress[3], portStream);
     }
+    return;
+}
+#endif // USE_ETHERNET 
 
     if (connectionType == SEND_USBSERIAL) {
 
