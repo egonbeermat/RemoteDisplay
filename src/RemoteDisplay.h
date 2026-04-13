@@ -4,7 +4,7 @@
 // Choose the SerialUSB connection
 #define REM_SERIALOUT SerialUSB1
 
-// Comment out to remove ethernet code, uncomment to choose Native Ethernet or QNEthernet
+// Comment out to remove ethernet code
 //#define USE_ETHERNET
 
 // Choose your Ethernet library here, comment out the one not used
