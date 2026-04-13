@@ -1,12 +1,12 @@
 
 # _RemoteDisplay_ - send Teensy 4.x screen buffers over Ethernet or SerialUSB to display on your desktop
-_Version: 0.2.0_
+_Version: 0.3.0_
 
 The _RemoteDisplay_ library, in conjunction with the supplied [Windows](https://github.com/egonbeermat/RemoteDisplay/tree/main/clientsoftware/Windows) and [MacOS](https://github.com/egonbeermat/RemoteDisplay/tree/main/clientsoftware/MacOS) client software, provides the ability to remotely display and control your Teensy 4.x screen from your desktop over Ethernet or SerialUSB.
 
 ## Introduction
 
-Demo of this in action, streaming from a Teensy 4.x running an LVGL driven display, over Ethernet to a client running on a Mac Mini:
+Demo of version 0.2.0 in action, streaming from a Teensy 4.x running an LVGL driven display, over Ethernet to a client running on a Mac Mini:
 
 https://youtu.be/TxMsTKo4VVM
 
@@ -135,16 +135,16 @@ if (remoteDisplay.sendRemoteScreen == true) {
 
 ## Additional Info
 
-If you registered a touch callback, it will be called if the `pollRemoteCommand()` detected a touch event or mouse pointer update. Alternatively, you can reference the following in your own (polled) touch interface code, and arbitrate between local and remote touches:
+If you registered a touch callback, it will be called if the `pollRemoteCommand()` detected a touch event or mouse pointer update. Alternatively, you can reference the following in your own touch interface code without the callback (but after calling _pollRemoteCommand()_), and arbitrate between local and remote touches:
 
 - `remoteDisplay.lastRemoteTouchState`  
   Set to `RemoteDisplay::PRESSED`, `RemoteDisplay::RELEASED` or `RemoteDisplay::POINTER_MOVED`
 
 - `remoteDisplay.lastRemoteTouchX`  
-  X co-ordinate of last touch/pointer position sent from remote client
+  X co-ordinate of last touch or pointer position sent from remote client
 
 - `remoteDisplay.lastRemoteTouchY`  
-  Y co-ordinate of last touch/pointer position sent from remote client
+  Y co-ordinate of last touch or pointer position sent from remote client
 
 The client software has an interface that provides a mechanism to control if buffer updates are also sent to the physical screen, or not, improving performance by disabling the local screen buffer flush. This interface sets `remoteDisplay.disableLocalScreen` to true or false, and you can check this before sending your buffer updates to the physical screen.
 
