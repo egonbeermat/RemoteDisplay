@@ -275,6 +275,10 @@ FASTRUN void RemoteDisplay::processIncomingCommand(const char * incomingPacketBu
         case 6: //Connect serial
             connectRemoteSerial();
             break;
+        case 7: //Pointer moved
+            lastRemoteTouchX = remoteX;
+            lastRemoteTouchY = remoteY;
+            lastRemoteTouchState = POINTER_MOVED;
     }
 }
 
