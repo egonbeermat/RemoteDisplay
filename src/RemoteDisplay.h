@@ -37,7 +37,7 @@ class RemoteDisplay
     using command_callback_t = void (*)(uint8_t command);
 public:
 
-    enum TouchState {PRESSED, RELEASED, POINTER_MOVED};
+    enum TouchState {PRESSED, RELEASED};
     enum CommandType {CMD_CONNECT, CMD_DISCONNECT, CMD_DISABLE_SCREEN, CMD_ENABLE_SCREEN};
     enum ConnectionType {SEND_NONE, SEND_ETHERNET, SEND_USBSERIAL};
 
