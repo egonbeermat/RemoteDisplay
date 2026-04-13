@@ -4,11 +4,7 @@
 // Choose the SerialUSB connection
 #define REM_SERIALOUT SerialUSB1
 
-// Comment out to remove ethernet code
-//#define USE_ETHERNET
-
 // Choose your Ethernet library here, comment out the one not used
-#if defined(USE_ETHERNET)
 #define QN_ETHERNET
 //#define NATIVE_ETHERNET
 
@@ -16,14 +12,13 @@
 #if defined(QN_ETHERNET)
 #include <QNEthernet.h>
 using namespace qindesign::network;
-#endif // QN_ETHERNET
+#endif
 
 // Native Ethernet
 #if defined(NATIVE_ETHERNET)
 #include <NativeEthernet.h>
 #include <NativeEthernetUdp.h>
-#endif // NATIVE_ETHERNET
-#endif // USE_ETHERNET
+#endif
 
 #define MAX_PACKET_SIZE(a, b) ((a) > (b) ? (a) : (b))
 
@@ -48,9 +43,7 @@ public:
 
     void pollRemoteCommand();
     void sendData(const uint16_t x1, const uint16_t y1, const uint16_t x2, const uint16_t y2, uint8_t *pixelmap);
-#if defined(USE_ETHERNET)
     void connectRemoteEthernet(IPAddress ipRemote);
-#endif // USE_ETHERNET
     void connectRemoteSerial();
     void disconnectRemote();
 
@@ -87,18 +80,15 @@ private:
         } rle_packet_t;
     #pragma pack(pop)
 
-#if defined(USE_ETHERNET)
 #if defined(QN_ETHERNET)
-EthernetUDP udpStream = EthernetUDP(40);
+    EthernetUDP udpStream = EthernetUDP(40);
 #endif
 
 #if defined(NATIVE_ETHERNET)
-EthernetUDP udpStream;
+    EthernetUDP udpStream;
 #endif
 
-IPAddress udpAddress;
-#endif // USE_ETHERNET
-
+    IPAddress udpAddress;
     uint16_t portStream;
 
     uint8_t infoBuffer[12];
