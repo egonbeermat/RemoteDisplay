@@ -12,17 +12,17 @@
 		<data>
 		ssepM9TxFijMmm4FOZsVScH5CvA=
 		</data>
-		<key>Resources/flutter_assets/AssetManifest.json</key>
-		<data>
-		vaawdPgx559IE9yP1pqgS3i2j9M=
-		</data>
 		<key>Resources/flutter_assets/FontManifest.json</key>
 		<data>
 		+D1xbIOooc3ypce1+jh+mmLy1J0=
 		</data>
 		<key>Resources/flutter_assets/NOTICES.Z</key>
 		<data>
-		rP0TByU4gr8CBhsW62HuZGUkz7A=
+		g6x4/r+iWl54XUJ4Z4XBaU4KkBQ=
+		</data>
+		<key>Resources/flutter_assets/NativeAssetsManifest.json</key>
+		<data>
+		sqUFytA4BWxtz8uFPHD24zn60xI=
 		</data>
 		<key>Resources/flutter_assets/fonts/MaterialIcons-Regular.otf</key>
 		<data>
@@ -34,7 +34,11 @@
 		</data>
 		<key>Resources/flutter_assets/shaders/ink_sparkle.frag</key>
 		<data>
-		VoVnsu58hN7wrwazX0nyAopiB0Q=
+		sxM4vXUdXTlz/NE5jWpDMQiyBlU=
+		</data>
+		<key>Resources/flutter_assets/shaders/stretch_effect.frag</key>
+		<data>
+		E+CXIAqhfAZloEXY0OAHmD4YsUA=
 		</data>
 	</dict>
 	<key>files2</key>
@@ -53,13 +57,6 @@
 			TIg0oNSAW+6gyoVgt/vWA5qMx2v+v3xJGbnqO4fGPbI=
 			</data>
 		</dict>
-		<key>Resources/flutter_assets/AssetManifest.json</key>
-		<dict>
-			<key>hash2</key>
-			<data>
-			j3LuiRRMSN7HWgCku4t/6d3WZb7naO9sXcv9cGsNYG8=
-			</data>
-		</dict>
 		<key>Resources/flutter_assets/FontManifest.json</key>
 		<dict>
 			<key>hash2</key>
@@ -71,7 +68,14 @@
 		<dict>
 			<key>hash2</key>
 			<data>
-			euO+NObqE+aYY9kFrerySEYtv+F++bUpCsWPBTv/V2E=
+			BAlSvJe+lQXgSa7bF/qZstNOhC7/z/+T8nvVgbJY1HY=
+			</data>
+		</dict>
+		<key>Resources/flutter_assets/NativeAssetsManifest.json</key>
+		<dict>
+			<key>hash2</key>
+			<data>
+			lG5uzcSmw3+kL7/ddSoLhRV5K1fqYEJGPWg+tRG7uL4=
 			</data>
 		</dict>
 		<key>Resources/flutter_assets/fonts/MaterialIcons-Regular.otf</key>
@@ -92,7 +96,14 @@
 		<dict>
 			<key>hash2</key>
 			<data>
-			4PC1vOWKHlNOnW4dGwFfD4TPwBCllniPCsOy7+1X5co=
+			RoZF1LMcQMF0HavWao7KX8AlJjP2YoMdCmoodqEbrTM=
+			</data>
+		</dict>
+		<key>Resources/flutter_assets/shaders/stretch_effect.frag</key>
+		<dict>
+			<key>hash2</key>
+			<data>
+			L1Nkyap/uLTY181NUgIAgKYl2ViXbpyX1/JoAy3gIto=
 			</data>
 		</dict>
 	</dict>

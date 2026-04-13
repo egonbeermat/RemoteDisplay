@@ -6,11 +6,11 @@
 	<dict>
 		<key>Resources/AppIcon.icns</key>
 		<data>
-		zf3D2ZqdGD53U6/1QSNzU4w41EU=
+		P5ksrYtL4CLbzYkxk7mvwduhHbM=
 		</data>
 		<key>Resources/Assets.car</key>
 		<data>
-		55j4y0ALhDZVS/t/CdxqCevA6bI=
+		KDLh/+z8Y9Gelz9KoXeocglHc8s=
 		</data>
 		<key>Resources/Base.lproj/MainMenu.nib</key>
 		<data>
@@ -23,104 +23,104 @@
 		<dict>
 			<key>cdhash</key>
 			<data>
-			Jncftz7Ajl/4nk830XsojCrgbs4=
+			0thUzP82M1v7mXOXbzzGC+FOpMI=
 			</data>
 			<key>requirement</key>
-			<string>anchor apple generic and identifier "io.flutter.flutter.app" and (certificate leaf[field.1.2.840.113635.100.6.1.9] /* exists */ or certificate 1[field.1.2.840.113635.100.6.2.6] /* exists */ and certificate leaf[field.1.2.840.113635.100.6.1.13] /* exists */ and certificate leaf[subject.OU] = K42JS4D4A8)</string>
+			<string>identifier "io.flutter.flutter.app" and anchor apple generic and certificate leaf[subject.CN] = "Apple Development: Ian Wall (HJW284AP83)" and certificate 1[field.1.2.840.113635.100.6.2.1] /* exists */</string>
 		</dict>
 		<key>Frameworks/FlutterMacOS.framework</key>
 		<dict>
 			<key>cdhash</key>
 			<data>
-			+nUo2o+HWOyUfcG52biFcdk5hEI=
+			BEEO+NeFIh+ilkWOYuWF4REsBBo=
 			</data>
 			<key>requirement</key>
-			<string>anchor apple generic and identifier "io.flutter.flutter-macos" and (certificate leaf[field.1.2.840.113635.100.6.1.9] /* exists */ or certificate 1[field.1.2.840.113635.100.6.2.6] /* exists */ and certificate leaf[field.1.2.840.113635.100.6.1.13] /* exists */ and certificate leaf[subject.OU] = K42JS4D4A8)</string>
+			<string>identifier "io.flutter.flutter-macos" and anchor apple generic and certificate leaf[subject.CN] = "Apple Development: Ian Wall (HJW284AP83)" and certificate 1[field.1.2.840.113635.100.6.2.1] /* exists */</string>
 		</dict>
 		<key>Frameworks/flutter_libserialport.framework</key>
 		<dict>
 			<key>cdhash</key>
 			<data>
-			30sHlb2bZCgHnqFwisw+h9ucAAM=
+			OsXSY5m1b9u66A39ZeBSHgolYis=
 			</data>
 			<key>requirement</key>
-			<string>anchor apple generic and identifier "org.cocoapods.flutter-libserialport" and (certificate leaf[field.1.2.840.113635.100.6.1.9] /* exists */ or certificate 1[field.1.2.840.113635.100.6.2.6] /* exists */ and certificate leaf[field.1.2.840.113635.100.6.1.13] /* exists */ and certificate leaf[subject.OU] = K42JS4D4A8)</string>
+			<string>identifier "org.cocoapods.flutter-libserialport" and anchor apple generic and certificate leaf[subject.CN] = "Apple Development: Ian Wall (HJW284AP83)" and certificate 1[field.1.2.840.113635.100.6.2.1] /* exists */</string>
 		</dict>
 		<key>Frameworks/libserialport.framework</key>
 		<dict>
 			<key>cdhash</key>
 			<data>
-			M89yVoHVYpRsrQA7vbTYTujvlMg=
+			uY4ZXjilR2cy33j1pcMS2V8n16Y=
 			</data>
 			<key>requirement</key>
-			<string>anchor apple generic and identifier "org.cocoapods.libserialport" and (certificate leaf[field.1.2.840.113635.100.6.1.9] /* exists */ or certificate 1[field.1.2.840.113635.100.6.2.6] /* exists */ and certificate leaf[field.1.2.840.113635.100.6.1.13] /* exists */ and certificate leaf[subject.OU] = K42JS4D4A8)</string>
+			<string>identifier "org.cocoapods.libserialport" and anchor apple generic and certificate leaf[subject.CN] = "Apple Development: Ian Wall (HJW284AP83)" and certificate 1[field.1.2.840.113635.100.6.2.1] /* exists */</string>
 		</dict>
 		<key>Frameworks/network_info_plus.framework</key>
 		<dict>
 			<key>cdhash</key>
 			<data>
-			LN8mvF1X5H9nascKaxBRzAVCz9Q=
+			/MFQrBLDsmAhHd0fwBNH8D0t9Tk=
 			</data>
 			<key>requirement</key>
-			<string>anchor apple generic and identifier "org.cocoapods.network-info-plus" and (certificate leaf[field.1.2.840.113635.100.6.1.9] /* exists */ or certificate 1[field.1.2.840.113635.100.6.2.6] /* exists */ and certificate leaf[field.1.2.840.113635.100.6.1.13] /* exists */ and certificate leaf[subject.OU] = K42JS4D4A8)</string>
+			<string>identifier "org.cocoapods.network-info-plus" and anchor apple generic and certificate leaf[subject.CN] = "Apple Development: Ian Wall (HJW284AP83)" and certificate 1[field.1.2.840.113635.100.6.2.1] /* exists */</string>
+		</dict>
+		<key>Frameworks/objective_c.framework</key>
+		<dict>
+			<key>cdhash</key>
+			<data>
+			5m9baPu2kZ2api3+rQ9/bXWp7ao=
+			</data>
+			<key>requirement</key>
+			<string>identifier "io.flutter.flutter.native-assets.objective-c" and anchor apple generic and certificate leaf[subject.CN] = "Apple Development: Ian Wall (HJW284AP83)" and certificate 1[field.1.2.840.113635.100.6.2.1] /* exists */</string>
 		</dict>
 		<key>Frameworks/package_info_plus.framework</key>
 		<dict>
 			<key>cdhash</key>
 			<data>
-			GEu+d2/O5awQOQFlgmIoAPRHS3o=
+			safnnOFvRa/ry1g4w34SALsYL/M=
 			</data>
 			<key>requirement</key>
-			<string>anchor apple generic and identifier "org.cocoapods.package-info-plus" and (certificate leaf[field.1.2.840.113635.100.6.1.9] /* exists */ or certificate 1[field.1.2.840.113635.100.6.2.6] /* exists */ and certificate leaf[field.1.2.840.113635.100.6.1.13] /* exists */ and certificate leaf[subject.OU] = K42JS4D4A8)</string>
-		</dict>
-		<key>Frameworks/path_provider_foundation.framework</key>
-		<dict>
-			<key>cdhash</key>
-			<data>
-			et0DxqnQNaf7PksQ8hZA8JA8TCU=
-			</data>
-			<key>requirement</key>
-			<string>anchor apple generic and identifier "org.cocoapods.path-provider-foundation" and (certificate leaf[field.1.2.840.113635.100.6.1.9] /* exists */ or certificate 1[field.1.2.840.113635.100.6.2.6] /* exists */ and certificate leaf[field.1.2.840.113635.100.6.1.13] /* exists */ and certificate leaf[subject.OU] = K42JS4D4A8)</string>
+			<string>identifier "org.cocoapods.package-info-plus" and anchor apple generic and certificate leaf[subject.CN] = "Apple Development: Ian Wall (HJW284AP83)" and certificate 1[field.1.2.840.113635.100.6.2.1] /* exists */</string>
 		</dict>
 		<key>Frameworks/screen_retriever_macos.framework</key>
 		<dict>
 			<key>cdhash</key>
 			<data>
-			B/SPpis0XT8kuXInwX0TT8KiaWI=
+			3iDFbRSSj9bjHFYP459tIxWLECw=
 			</data>
 			<key>requirement</key>
-			<string>anchor apple generic and identifier "org.cocoapods.screen-retriever-macos" and (certificate leaf[field.1.2.840.113635.100.6.1.9] /* exists */ or certificate 1[field.1.2.840.113635.100.6.2.6] /* exists */ and certificate leaf[field.1.2.840.113635.100.6.1.13] /* exists */ and certificate leaf[subject.OU] = K42JS4D4A8)</string>
+			<string>identifier "org.cocoapods.screen-retriever-macos" and anchor apple generic and certificate leaf[subject.CN] = "Apple Development: Ian Wall (HJW284AP83)" and certificate 1[field.1.2.840.113635.100.6.2.1] /* exists */</string>
 		</dict>
 		<key>Frameworks/shared_preferences_foundation.framework</key>
 		<dict>
 			<key>cdhash</key>
 			<data>
-			rZZDP+w1kq5Q6Eil9BYD8F/0VS4=
+			tEbFIHtk4if6PjOj36i53SGRye0=
 			</data>
 			<key>requirement</key>
-			<string>anchor apple generic and identifier "org.cocoapods.shared-preferences-foundation" and (certificate leaf[field.1.2.840.113635.100.6.1.9] /* exists */ or certificate 1[field.1.2.840.113635.100.6.2.6] /* exists */ and certificate leaf[field.1.2.840.113635.100.6.1.13] /* exists */ and certificate leaf[subject.OU] = K42JS4D4A8)</string>
+			<string>identifier "org.cocoapods.shared-preferences-foundation" and anchor apple generic and certificate leaf[subject.CN] = "Apple Development: Ian Wall (HJW284AP83)" and certificate 1[field.1.2.840.113635.100.6.2.1] /* exists */</string>
 		</dict>
 		<key>Frameworks/window_manager.framework</key>
 		<dict>
 			<key>cdhash</key>
 			<data>
-			TtpT6PBjr8+VSIXHlgJArXTEcHM=
+			ZOWOpoaN5TXa7YIJ8U8JZx77EZw=
 			</data>
 			<key>requirement</key>
-			<string>anchor apple generic and identifier "org.cocoapods.window-manager" and (certificate leaf[field.1.2.840.113635.100.6.1.9] /* exists */ or certificate 1[field.1.2.840.113635.100.6.2.6] /* exists */ and certificate leaf[field.1.2.840.113635.100.6.1.13] /* exists */ and certificate leaf[subject.OU] = K42JS4D4A8)</string>
+			<string>identifier "org.cocoapods.window-manager" and anchor apple generic and certificate leaf[subject.CN] = "Apple Development: Ian Wall (HJW284AP83)" and certificate 1[field.1.2.840.113635.100.6.2.1] /* exists */</string>
 		</dict>
 		<key>Resources/AppIcon.icns</key>
 		<dict>
 			<key>hash2</key>
 			<data>
-			zqUbdwZ/q5wrmJjbb2m+A2Lxx+JhTbqDVVb/my4Sxyk=
+			etRWd4k2TIZFHYhAMtG3dzgnfutUuOWll/koaPry7hs=
 			</data>
 		</dict>
 		<key>Resources/Assets.car</key>
 		<dict>
 			<key>hash2</key>
 			<data>
-			0wV3KxYIhvi9g5asA1gtrkw2Wa6AYBftQWM5SPhohFc=
+			9FPO7krUDFAz4JTfWUd9um+OkEUKqMWVBbUCFumUP04=
 			</data>
 		</dict>
 		<key>Resources/Base.lproj/MainMenu.nib</key>
