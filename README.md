@@ -137,9 +137,14 @@ if (remoteDisplay.sendRemoteScreen == true) {
 
 If you registered a touch callback, it will be called if the `pollRemoteCommand()` detected a touch event or mouse pointer update. Alternatively, you can reference the following in your own (polled) touch interface code, and arbitrate between local and remote touches:
 
-`remoteDisplay.lastRemoteTouchState` - set to `RemoteDisplay::PRESSED`, `RemoteDisplay::RELEASED` or `RemoteDisplay::POINTER_MOVED`
-`remoteDisplay.lastRemoteTouchX` - X co-ordinate of last touch/pointer position sent from remote client
-`remoteDisplay.lastRemoteTouchY` - Y co-ordinate of last touch/pointer position sent from remote client
+- `remoteDisplay.lastRemoteTouchState`  
+  Set to `RemoteDisplay::PRESSED`, `RemoteDisplay::RELEASED` or `RemoteDisplay::POINTER_MOVED`
+
+- `remoteDisplay.lastRemoteTouchX`  
+  X co-ordinate of last touch/pointer position sent from remote client
+
+- `remoteDisplay.lastRemoteTouchY`  
+  Y co-ordinate of last touch/pointer position sent from remote client
 
 The client software has an interface that provides a mechanism to control if buffer updates are also sent to the physical screen, or not, improving performance by disabling the local screen buffer flush. This interface sets `remoteDisplay.disableLocalScreen` to true or false, and you can check this before sending your buffer updates to the physical screen.
 
