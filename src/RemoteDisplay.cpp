@@ -279,6 +279,9 @@ FASTRUN void RemoteDisplay::processIncomingCommand(const char * incomingPacketBu
             lastRemoteTouchX = remoteX;
             lastRemoteTouchY = remoteY;
             lastRemoteTouchState = POINTER_MOVED;
+            if (touchCallback) {
+                touchCallback(remoteX, remoteY, lastRemoteTouchState);
+            }
     }
 }
 
