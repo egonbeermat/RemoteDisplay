@@ -1,16 +1,16 @@
 
-# _RemoteDisplay_ - send Teensy 4.x screen buffers over Ethernet or SerialUSB to display on your desktop
+# _RemoteDisplay_ - send microcontroller screen buffers over Ethernet or SerialUSB to display on your desktop
 _Version: 0.3.0_
 
-The _RemoteDisplay_ library, in conjunction with the supplied [Windows](https://github.com/egonbeermat/RemoteDisplay/tree/main/clientsoftware/Windows) and [MacOS](https://github.com/egonbeermat/RemoteDisplay/tree/main/clientsoftware/MacOS) client software, provides the ability to remotely display and control your Teensy 4.x screen from your desktop over Ethernet or SerialUSB.
+The _RemoteDisplay_ library, in conjunction with the supplied [Windows](https://github.com/egonbeermat/RemoteDisplay/tree/main/clientsoftware/Windows) and [MacOS](https://github.com/egonbeermat/RemoteDisplay/tree/main/clientsoftware/MacOS) client software, provides the ability to remotely display and control your microcontroller screen from your desktop over Ethernet or SerialUSB. Initially developed for the Teensy 4.x, it can run with little or no modifications in an Arduino compatible environment, such as ESP32 Arduino.
 
 ## Introduction
 
-Demo of version 0.2.0 in action, streaming from a Teensy 4.x running an LVGL driven display, over Ethernet to a client running on a Mac Mini:
+Demo of version 0.2.0 in action, streaming from a Teensy 4.1 running an LVGL driven display, over Ethernet to a client running on a Mac Mini:
 
 https://youtu.be/TxMsTKo4VVM
 
-If your Teensy 4.x uses a screen buffer and transmits screen updates using a standard pattern of defining an area x, y, w, h, and a pointer to a 16 bit RGB565 color buffer for the pixels, you can use this library to compress and send that buffer to display on your desktop, using the included client software. Additionally, you can link touch controls on the desktop into your code on the Teensy 4.x, allowing full remote operation of your device.
+If your microcontroller uses a screen buffer and transmits screen updates using a standard pattern of defining an area x, y, w, h, and a pointer to a 16 bit RGB565 color buffer for the pixels, you can use this library to compress and send that buffer to display on your desktop, using the included client software. Additionally, you can link touch controls on the desktop into your code on the microcontroller, allowing full remote operation of your device.
 
 Use this for operating your device easily whilst developing, or to test display code without having a physical screen to display on, or to test different resolutions on the remote display, without having a physical screen that supports that resolution.
 
@@ -148,7 +148,7 @@ If you registered a touch callback, it will be called if the `pollRemoteCommand(
 
 The client software has an interface that provides a mechanism to control if buffer updates are also sent to the physical screen, or not, improving performance by disabling the local screen buffer flush. This interface sets `remoteDisplay.disableLocalScreen` to true or false, and you can check this before sending your buffer updates to the physical screen.
 
-The client software typically initiates the connection to the Teensy 4.x, but you can call `remoteDisplay.connectRemote(IPAddress)` from the Teensy 4.x, supplying it's IP address, to initiate an Ethernet connection. This is useful if you wish to auto-reconnect after a reboot, for instance.
+The client software typically initiates the connection to the microcontroller, but you can call `remoteDisplay.connectRemote(IPAddress)` from the microcontroller, supplying it's IP address, to initiate an Ethernet connection. This is useful if you wish to auto-reconnect after a reboot, for instance.
 
 ## Performance
 
