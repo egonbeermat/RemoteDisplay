@@ -1,16 +1,16 @@
 
-# _RemoteDisplay_ - send Teensy 4.x screen buffers over Ethernet or SerialUSB to display on your desktop
-_Version: 0.2.0_
+# _RemoteDisplay_ - send microcontroller screen buffers over Ethernet or SerialUSB to display on your desktop
+_Version: 0.3.0_
 
-The _RemoteDisplay_ library, in conjunction with the supplied [Windows](https://github.com/egonbeermat/RemoteDisplay/tree/main/clientsoftware/Windows) and [MacOS](https://github.com/egonbeermat/RemoteDisplay/tree/main/clientsoftware/MacOS) client software, provides the ability to remotely display and control your Teensy 4.x screen from your desktop over Ethernet or SerialUSB.
+The _RemoteDisplay_ library, in conjunction with the supplied [Windows](https://github.com/egonbeermat/RemoteDisplay/tree/main/clientsoftware/Windows) and [MacOS](https://github.com/egonbeermat/RemoteDisplay/tree/main/clientsoftware/MacOS) client software, provides the ability to remotely display and control your microcontroller screen from your desktop over Ethernet or SerialUSB. Initially developed for the Teensy 4.x, it can run with little or no modifications in an Arduino compatible environment, such as ESP32 Arduino.
 
 ## Introduction
 
-Demo of this in action, streaming from a Teensy 4.x running an LVGL driven display, over Ethernet to a client running on a Mac Mini:
+Demo of version 0.2.0 in action, streaming from a Teensy 4.1 running an LVGL driven display, over Ethernet to a client running on a Mac Mini:
 
 https://youtu.be/TxMsTKo4VVM
 
-If your Teensy 4.x uses a screen buffer and transmits screen updates using a standard pattern of defining an area x, y, w, h, and a pointer to a 16 bit RGB565 color buffer for the pixels, you can use this library to compress and send that buffer to display on your desktop, using the included client software. Additionally, you can link touch controls on the desktop into your code on the Teensy 4.x, allowing full remote operation of your device.
+If your microcontroller uses a screen buffer and transmits screen updates using a standard pattern of defining an area x, y, w, h, and a pointer to a 16 bit RGB565 color buffer for the pixels, you can use this library to compress and send that buffer to display on your desktop, using the included client software. Additionally, you can link touch controls on the desktop into your code on the microcontroller, allowing full remote operation of your device.
 
 Use this for operating your device easily whilst developing, or to test display code without having a physical screen to display on, or to test different resolutions on the remote display, without having a physical screen that supports that resolution.
 
@@ -57,7 +57,7 @@ void flushBuffer(uint16_t x1, uint16_t x2, uint16_t y1, uint16_t y2, uint16_t * 
 
 For Ethernet connections, this guide assumes you already have Ethernet connectivity and code setup. Refer to the examples and Ethernet library documentation if you haven't already done so. Follow these **6** steps to implement:
 
-**Step 1 (Ethernet):** For Ethernet, uncomment / comment out the appropriate lines at the top of _RemoteDisplay.h_ to enable QNEthernet or NativeEthernet
+**Step 1 (Ethernet):** For Ethernet,  at the top of _RemoteDisplay.h_, uncomment USE_REM_ETH and uncomment / comment out the appropriate lines to enable QNEthernet or NativeEthernet
 
 **Step 1 (SerialUSB):** By default, this requires you enable the dual serial or triple serial build options, so that SerialUSB1 can be used to send data without interfering with your existing Serial read/writes/prints:
 - **Arduino IDE** - Select 'Dual Serial' or 'Triple Serial' from the 'Tools...USB Type' menu item
@@ -84,7 +84,7 @@ remoteDisplay.init(SCREENWIDTH, SCREENHEIGHT, udpPortNumber);
 **Step 4:** Register callbacks to be executed when the client software:
 
 - requests full display refresh (essential but optional)
-- detects a touch event (optional)
+- detects a touch event or mouse pointer update (optional)
 - issues a command (optional)
 
 ```c++
@@ -101,7 +101,7 @@ void  refreshDisplayCallback() {
 }
 
 void  remoteTouchCallback(uint16_t x, uint16_t y, uint8_t action) {
-	// Executed when remoteDisplay.readRemoteCommand() detects a touch event.
+	// Executed when remoteDisplay.readRemoteCommand() detects a touch event or mouse pointer update
 	// x & y represent the co-ords of the touch, action is either 0 (PRESSED) or 1 (RELEASED)
 }
 
@@ -135,15 +135,20 @@ if (remoteDisplay.sendRemoteScreen == true) {
 
 ## Additional Info
 
-If you registered a touch callback, it will be called if the `pollRemoteCommand()` detected a touch event. Alternatively, you can reference the following in your own (polled) touch interface code, and arbitrate between local and remote touches:
+If you registered a touch callback, it will be called if the `pollRemoteCommand()` detected a touch event or mouse pointer update. Alternatively, you can reference the following in your own touch interface code without the callback (but after calling _pollRemoteCommand()_), and arbitrate between local and remote touches:
 
-`remoteDisplay.lastRemoteTouchState` - set to `RemoteDisplay::PRESSED` or `RemoteDisplay::RELEASED`
-`remoteDisplay.lastRemoteTouchX` - X co-ordinate of last touch sent from remote client
-`remoteDisplay.lastRemoteTouchY` - Y co-ordinate of last touch sent from remote client
+- `remoteDisplay.lastRemoteTouchState`  
+  Set to `RemoteDisplay::PRESSED`, `RemoteDisplay::RELEASED` or `RemoteDisplay::POINTER_MOVED`
+
+- `remoteDisplay.lastRemoteTouchX`  
+  X co-ordinate of last touch or pointer position sent from remote client
+
+- `remoteDisplay.lastRemoteTouchY`  
+  Y co-ordinate of last touch or pointer position sent from remote client
 
 The client software has an interface that provides a mechanism to control if buffer updates are also sent to the physical screen, or not, improving performance by disabling the local screen buffer flush. This interface sets `remoteDisplay.disableLocalScreen` to true or false, and you can check this before sending your buffer updates to the physical screen.
 
-The client software typically initiates the connection to the Teensy 4.x, but you can call `remoteDisplay.connectRemote(IPAddress)` from the Teensy 4.x, supplying it's IP address, to initiate an Ethernet connection. This is useful if you wish to auto-reconnect after a reboot, for instance.
+The client software typically initiates the connection to the microcontroller, but you can call `remoteDisplay.connectRemote(IPAddress)` from the microcontroller, supplying it's IP address, to initiate an Ethernet connection. This is useful if you wish to auto-reconnect after a reboot, for instance.
 
 ## Performance
 

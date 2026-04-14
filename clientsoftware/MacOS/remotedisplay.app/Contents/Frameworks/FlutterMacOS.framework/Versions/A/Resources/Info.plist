@@ -20,5 +20,9 @@
 	<string>1.0</string>
 	<key>NSPrincipalClass</key>
 	<string></string>
+	<key>FlutterEngine</key>
+	<string>e4b8dca3f1b4ede4c30371002441c88c12187ed6</string>
+	<key>BuildMode</key>
+	<string>release</string>
 </dict>
 </plist>
